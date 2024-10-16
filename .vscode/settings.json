@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "South Pole Savior.sln"
+    "dotnet.defaultSolution": "south-pole-savior.sln"
 }
