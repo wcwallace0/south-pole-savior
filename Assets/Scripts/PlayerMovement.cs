@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
     public float dragWhenStopping;
     public float midairGravScale;
     public float slopeGravScale;
+    public float duckGravScale;
 
     [Header("Sprites")]
     public Sprite sliding;
@@ -37,12 +38,10 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector2(-maxVelocity, rb.velocity.y);
         }
 
-        // Set gravity scale accordingly
+        // Set sprites accordingly
         if(gc.isGrounded) {
-            rb.gravityScale = slopeGravScale;
             sr.sprite = sliding;
         } else {
-            rb.gravityScale = midairGravScale;
             sr.sprite = jumping;
         }
 
@@ -74,24 +73,41 @@ public class PlayerMovement : MonoBehaviour
 
         // Ducking
         if(Input.GetKey(KeyCode.S) && gc.isGrounded) {
-            // TODO duck
+            rb.gravityScale = duckGravScale;
             sr.sprite = ducking;
-            // offsety -0.2 size y 0.6
+
+            // Make hitbox smaller
             hitbox.offset = new Vector2(hitbox.offset.x, -0.2f);
             hitbox.size = new Vector2(hitbox.size.x, 0.6f);
-        }
-        if(Input.GetKeyUp(KeyCode.S)) {
+        } else {
+            // Set gravity scale for when not ducking
+            if(gc.isGrounded) {
+                rb.gravityScale = slopeGravScale;
+            } else {
+                rb.gravityScale = midairGravScale;
+            }
+
+            // Set hitbox back to normal size
             hitbox.offset = new Vector2(0f, 0f);
-            hitbox.size = new Vector2(0.3f, 1f);
+            hitbox.size = new Vector2(0.5f, 1f);
+
         }
 
         // Boost
         if(Input.GetKeyDown(KeyCode.Mouse1)) {
-            Vector2 boost = rb.velocity;
+            Vector2 boost = new Vector2(boostSpeed, rb.velocity.y);
+
             if(isFacingRight) {
-                boost.x = boostSpeed;
+                // Boost should not slow down player
+                if(rb.velocity.x > boost.x) {
+                    boost.x = rb.velocity.x;
+                }
             } else {
-                boost.x = -boostSpeed;
+                boost.x *= -1;
+                // Boost should not slow down player
+                if(rb.velocity.x < boost.x) {
+                    boost.x = rb.velocity.x;
+                }
             }
             rb.velocity = boost;
         }
