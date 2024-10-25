@@ -15,9 +15,10 @@ public class PlayerMovement : MonoBehaviour
     public float boostSpeed;
     public float jumpForce;
     public float dragWhenStopping;
-    public float midairGravScale;
-    public float slopeGravScale;
-    public float duckGravScale;
+    public float midairGravScale; // Gravity scale for jumping and falling
+    public float slopeAccel; // Gravity scale on slopes when player is sliding down
+    public float slopeAccelUp; // Gravity scale on slopes when player is moving up the slope
+    public float duckGravScale; // Gravity scale on slopes when player is holding down
 
     [Header("Sprites")]
     public Sprite sliding;
@@ -82,7 +83,11 @@ public class PlayerMovement : MonoBehaviour
         } else {
             // Set gravity scale for when not ducking
             if(gc.isGrounded) {
-                rb.gravityScale = slopeGravScale;
+                if(rb.velocity.y > 0) {
+                    rb.gravityScale = slopeAccelUp;
+                } else {
+                    rb.gravityScale = slopeAccel;
+                }
             } else {
                 rb.gravityScale = midairGravScale;
             }
