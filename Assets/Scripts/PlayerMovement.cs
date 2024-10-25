@@ -5,13 +5,23 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public Rigidbody2D rb;
+    public GroundCheck gc;
+    public SpriteRenderer sr;
+    public CapsuleCollider2D hitbox;
+    public float xVelocity;
+
+    [Header("Movement Parameters")]
     public float maxVelocity;
     public float boostSpeed;
     public float jumpForce;
     public float dragWhenStopping;
-    public GroundCheck gc;
+    public float midairGravScale;
+    public float slopeGravScale;
 
-    public float xVelocity;
+    [Header("Sprites")]
+    public Sprite sliding;
+    public Sprite jumping;
+    public Sprite ducking;
 
     private bool isFacingRight = true;
 
@@ -27,6 +37,15 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector2(-maxVelocity, rb.velocity.y);
         }
 
+        // Set gravity scale accordingly
+        if(gc.isGrounded) {
+            rb.gravityScale = slopeGravScale;
+            sr.sprite = sliding;
+        } else {
+            rb.gravityScale = midairGravScale;
+            sr.sprite = jumping;
+        }
+
         // for display in inspector
         xVelocity = rb.velocity.x;
 
@@ -39,9 +58,11 @@ public class PlayerMovement : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.D) && !isFacingRight) {
             // face right
             isFacingRight = true;
+            sr.flipX = true;
         } else if(Input.GetKeyDown(KeyCode.A) && isFacingRight) {
             // face left
             isFacingRight = false;
+            sr.flipX = false;
         }
 
         // Slow player down when they hold in direction opposite of movement
@@ -52,8 +73,16 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Ducking
-        if(Input.GetKey(KeyCode.S)) {
+        if(Input.GetKey(KeyCode.S) && gc.isGrounded) {
             // TODO duck
+            sr.sprite = ducking;
+            // offsety -0.2 size y 0.6
+            hitbox.offset = new Vector2(hitbox.offset.x, -0.2f);
+            hitbox.size = new Vector2(hitbox.size.x, 0.6f);
+        }
+        if(Input.GetKeyUp(KeyCode.S)) {
+            hitbox.offset = new Vector2(0f, 0f);
+            hitbox.size = new Vector2(0.3f, 1f);
         }
 
         // Boost
