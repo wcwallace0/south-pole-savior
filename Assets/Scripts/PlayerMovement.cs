@@ -8,6 +8,9 @@ public class PlayerMovement : MonoBehaviour
     public GroundCheck gc;
     public SpriteRenderer sr;
     public CapsuleCollider2D hitbox;
+    public CapsuleCollider2D hitboxSmall;
+    public BoxCollider2D deathbox;
+    public BoxCollider2D deathboxSmall;
     public float xVelocity;
 
     [Header("Movement Parameters")]
@@ -27,17 +30,8 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isFacingRight = true;
 
-    private void Start() {
-        // rb.velocity = new Vector3(-7f, 0f, 0f);
-    }
-
     private void Update() {
-        // Enforce max x velocity
-        if(rb.velocity.x > maxVelocity) {
-            rb.velocity = new Vector2(maxVelocity, rb.velocity.y);
-        } else if(rb.velocity.x < -maxVelocity) {
-            rb.velocity = new Vector2(-maxVelocity, rb.velocity.y);
-        }
+        EnforceMaxVelocity();
 
         // Set sprites accordingly
         if(gc.isGrounded) {
@@ -48,11 +42,6 @@ public class PlayerMovement : MonoBehaviour
 
         // for display in inspector
         xVelocity = rb.velocity.x;
-
-        // Jump
-        if(gc.isGrounded && Input.GetKeyDown(KeyCode.Mouse0)) {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-        }
 
         // Direction
         if(Input.GetKeyDown(KeyCode.D) && !isFacingRight) {
@@ -65,21 +54,50 @@ public class PlayerMovement : MonoBehaviour
             sr.flipX = false;
         }
 
-        // Slow player down when they hold in direction opposite of movement
+        Jump();
+        Skidding();
+        Ducking();
+        Boosting();
+    }
+
+    // Called in Update()
+    // Clamps magnitude of X Velocity to maxVelocity
+    private void EnforceMaxVelocity() {
+        if(rb.velocity.x > maxVelocity) {
+            rb.velocity = new Vector2(maxVelocity, rb.velocity.y);
+        } else if(rb.velocity.x < -maxVelocity) {
+            rb.velocity = new Vector2(-maxVelocity, rb.velocity.y);
+        }
+    }
+
+
+    // Called in Update()
+    // Handles jumping when the player presses the jump button
+    private void Jump() {
+        if(gc.isGrounded && Input.GetKeyDown(KeyCode.Space)) {
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+        }
+    }
+
+    // Called in Update()
+    // Checks if the player is holding in the direction opposite of their movement
+    // If so, increase drag so player skids to a stop
+    private void Skidding() {
         if((rb.velocity.x > 0 && Input.GetKey(KeyCode.A)) || (rb.velocity.x < 0 && Input.GetKey(KeyCode.D))) {
             rb.drag = dragWhenStopping;
         } else {
             rb.drag = 0;
         }
+    }
 
-        // Ducking
+    // Called in Update()
+    // Handles ducking when the player holds the down button
+    private void Ducking() {
         if(Input.GetKey(KeyCode.S) && gc.isGrounded) {
             rb.gravityScale = duckGravScale;
             sr.sprite = ducking;
 
-            // Make hitbox smaller
-            hitbox.offset = new Vector2(hitbox.offset.x, -0.2f);
-            hitbox.size = new Vector2(hitbox.size.x, 0.6f);
+            ShrinkHitboxes(true);
         } else {
             // Set gravity scale for when not ducking
             if(gc.isGrounded) {
@@ -92,14 +110,14 @@ public class PlayerMovement : MonoBehaviour
                 rb.gravityScale = midairGravScale;
             }
 
-            // Set hitbox back to normal size
-            hitbox.offset = new Vector2(0f, 0f);
-            hitbox.size = new Vector2(0.5f, 1f);
-
+            ShrinkHitboxes(false);
         }
+    }
 
-        // Boost
-        if(Input.GetKeyDown(KeyCode.Mouse1)) {
+    // Called in Update()
+    // Handles boosting when the player presses the boost button
+    private void Boosting() {
+        if(Input.GetKeyDown(KeyCode.Return)) {
             Vector2 boost = new Vector2(boostSpeed, rb.velocity.y);
 
             if(isFacingRight) {
@@ -116,5 +134,15 @@ public class PlayerMovement : MonoBehaviour
             }
             rb.velocity = boost;
         }
+    }
+
+    // If shrink is true, shrinks player hitboxes (for when player is ducking)
+    // If shrink is false, returns player hitboxes to their default
+    private void ShrinkHitboxes(bool shrink) {
+        hitbox.enabled = !shrink;
+        hitboxSmall.enabled = shrink;
+
+        deathbox.enabled = !shrink;
+        deathboxSmall.enabled = shrink;
     }
 }
