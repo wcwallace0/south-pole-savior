@@ -6,6 +6,7 @@ public class PlayerMovement : MonoBehaviour
 {
     public Rigidbody2D rb;
     public GroundCheck gc;
+    public DeathCheck dc;
     public SpriteRenderer sr;
     public CapsuleCollider2D hitbox;
     public CapsuleCollider2D hitboxSmall;
@@ -23,41 +24,55 @@ public class PlayerMovement : MonoBehaviour
     public float slopeAccelUp; // Gravity scale on slopes when player is moving up the slope
     public float duckGravScale; // Gravity scale on slopes when player is holding down
 
+    [Header("Other Parameters")]
+    public float deathTime;
+    private Vector2 respawnPosition;
+    public bool faceRightOnSpawn = true; // true - right, false - left
+
     [Header("Sprites")]
     public Sprite sliding;
     public Sprite jumping;
     public Sprite ducking;
 
-    private bool isFacingRight = true;
+    private bool isFacingRight;
+    private bool isDead = false;
+
+    private void Start() {
+        respawnPosition = transform.position;
+        isFacingRight = faceRightOnSpawn;
+        sr.flipX = faceRightOnSpawn;
+    }
 
     private void Update() {
-        EnforceMaxVelocity();
+        if(!isDead) {
+            EnforceMaxVelocity();
 
-        // Set sprites accordingly
-        if(gc.isGrounded) {
-            sr.sprite = sliding;
-        } else {
-            sr.sprite = jumping;
+            // Set sprites accordingly
+            if(gc.isGrounded) {
+                sr.sprite = sliding;
+            } else {
+                sr.sprite = jumping;
+            }
+
+            // for display in inspector
+            xVelocity = rb.velocity.x;
+
+            // Direction
+            if(Input.GetKeyDown(KeyCode.D) && !isFacingRight) {
+                // face right
+                isFacingRight = true;
+                sr.flipX = true;
+            } else if(Input.GetKeyDown(KeyCode.A) && isFacingRight) {
+                // face left
+                isFacingRight = false;
+                sr.flipX = false;
+            }
+
+            Jump();
+            Skidding();
+            Ducking();
+            Boosting();
         }
-
-        // for display in inspector
-        xVelocity = rb.velocity.x;
-
-        // Direction
-        if(Input.GetKeyDown(KeyCode.D) && !isFacingRight) {
-            // face right
-            isFacingRight = true;
-            sr.flipX = true;
-        } else if(Input.GetKeyDown(KeyCode.A) && isFacingRight) {
-            // face left
-            isFacingRight = false;
-            sr.flipX = false;
-        }
-
-        Jump();
-        Skidding();
-        Ducking();
-        Boosting();
     }
 
     // Called in Update()
@@ -144,5 +159,35 @@ public class PlayerMovement : MonoBehaviour
 
         deathbox.enabled = !shrink;
         deathboxSmall.enabled = shrink;
+    }
+
+    public void Death() {
+        isDead = true;
+        rb.gravityScale = 0;
+        rb.velocity = Vector2.zero;
+        dc.enabled = false;
+        sr.enabled = false;
+        isFacingRight = faceRightOnSpawn;
+        sr.flipX = faceRightOnSpawn;
+ 
+        StartCoroutine(DeathProcess());
+    }
+
+    private IEnumerator DeathProcess() {
+        yield return new WaitForSeconds(deathTime);
+
+        transform.position = respawnPosition;
+        rb.gravityScale = midairGravScale;
+        dc.enabled = true;
+        sr.enabled = true;
+
+        // Restore player controls
+        isDead = false;
+    }
+
+    private void OnCollisionEnter2D(Collision2D other) {
+        if(!isDead && other.gameObject.CompareTag("Death")) {
+            Death();
+        }
     }
 }
