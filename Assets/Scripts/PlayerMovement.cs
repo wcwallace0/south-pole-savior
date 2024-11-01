@@ -185,6 +185,11 @@ public class PlayerMovement : MonoBehaviour
         isDead = false;
     }
 
+    public void Checkpoint(Vector2 newSpawnPosition, bool newInitialDirection) {
+        respawnPosition = newSpawnPosition;
+        faceRightOnSpawn = newInitialDirection;
+    }
+
     private void OnCollisionEnter2D(Collision2D other) {
         if(!isDead && other.gameObject.CompareTag("Death")) {
             Death();
