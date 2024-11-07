@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerActions : MonoBehaviour
 {
     public Folder currentFolder;
+    public bool isAtRoot = true;
     public File selectedFile;
     public int playerHealth;
     public Cybersecurity cybersec;
@@ -13,6 +14,19 @@ public class PlayerActions : MonoBehaviour
     public void NavigateFolder(Folder newFolder) {
         newFolder.Navigate(currentFolder);
         currentFolder = newFolder;
+        isAtRoot = false;
+    }
+
+    public void NavigateBack() {
+        if(!isAtRoot) {
+            Folder parent = currentFolder.transform.parent.GetComponent<Folder>();
+            parent.Navigate(currentFolder);
+            currentFolder = parent;
+
+            if(parent.isRoot) {
+                isAtRoot = true;
+            }
+        }
     }
 
     public void ZipBomb()
