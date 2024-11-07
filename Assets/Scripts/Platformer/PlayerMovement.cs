@@ -13,10 +13,12 @@ public class PlayerMovement : MonoBehaviour
     public BoxCollider2D deathbox;
     public BoxCollider2D deathboxSmall;
     public float xVelocity;
+    public GameObject boostIndicator;
 
     [Header("Movement Parameters")]
     public float maxVelocity;
     public float boostSpeed;
+    public float boostCooldown;
     public float jumpForce;
     public float dragWhenStopping;
     public float midairGravScale; // Gravity scale for jumping and falling
@@ -36,6 +38,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isFacingRight;
     private bool isDead = false;
+    private bool canBoost = true;
 
     private void Start() {
         respawnPosition = transform.position;
@@ -132,7 +135,7 @@ public class PlayerMovement : MonoBehaviour
     // Called in Update()
     // Handles boosting when the player presses the boost button
     private void Boosting() {
-        if(Input.GetKeyDown(KeyCode.Return)) {
+        if(canBoost && Input.GetKeyDown(KeyCode.Return)) {
             Vector2 boost = new Vector2(boostSpeed, rb.velocity.y);
 
             if(isFacingRight) {
@@ -148,7 +151,17 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
             rb.velocity = boost;
+
+            canBoost = false;
+            boostIndicator.SetActive(true);
+            StartCoroutine(BoostCooldown());
         }
+    }
+
+    private IEnumerator BoostCooldown() {
+        yield return new WaitForSeconds(boostCooldown);
+        canBoost = true;
+        boostIndicator.SetActive(false);
     }
 
     // If shrink is true, shrinks player hitboxes (for when player is ducking)
