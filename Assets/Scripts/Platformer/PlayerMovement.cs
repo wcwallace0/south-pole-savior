@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -77,6 +78,11 @@ public class PlayerMovement : MonoBehaviour
             Skidding();
             Ducking();
             Boosting();
+
+            // Restart Level
+            if(Input.GetKeyDown(KeyCode.R)) {
+                RestartLevel();
+            }
         }
     }
 
@@ -181,6 +187,13 @@ public class PlayerMovement : MonoBehaviour
 
 
     // DEATH AND CHECKPOINTS
+
+    // Called when player presses restart button (R)
+    private void RestartLevel() {
+        // Reload scene
+        string currentScene = SceneManager.GetActiveScene().name;
+        SceneManager.LoadScene(currentScene);
+    }
 
     public void Death() {
         isDead = true;
