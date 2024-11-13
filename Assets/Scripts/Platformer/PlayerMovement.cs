@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -39,6 +40,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isFacingRight;
     private bool isDead = false;
     private bool canBoost = true;
+    private float gravMultiplier = 1;
 
     private void Start() {
         respawnPosition = transform.position;
@@ -77,6 +79,9 @@ public class PlayerMovement : MonoBehaviour
             Boosting();
         }
     }
+
+
+    // MOVEMENT
 
     // Called in Update()
     // Clamps magnitude of X Velocity to maxVelocity
@@ -174,6 +179,9 @@ public class PlayerMovement : MonoBehaviour
         deathboxSmall.enabled = shrink;
     }
 
+
+    // DEATH AND CHECKPOINTS
+
     public void Death() {
         isDead = true;
         rb.gravityScale = 0;
@@ -207,5 +215,39 @@ public class PlayerMovement : MonoBehaviour
         if(!isDead && other.gameObject.CompareTag("Death")) {
             Death();
         }
+    }
+
+
+    // GRAVITY FIELDS
+
+    // Takes a function that is applied to all gravity related fields
+    // Pass in MakeNegative() to flip gravity
+    // Pass in Math.Abs() to return gravity to normal
+    private void ApplyToGravFields(Func<float, float> f) {
+        transform.localScale = new Vector3(transform.localScale.x, f(transform.localScale.y), transform.localScale.z);
+        midairGravScale = f(midairGravScale);
+        slopeAccel = f(slopeAccel);
+        slopeAccelUp = f(slopeAccelUp);
+        duckGravScale = f(duckGravScale);
+        jumpForce = f(jumpForce);
+    }
+
+    // Makes a number negative whether it is already negative or not
+    private float MakeNegative(float num) {
+        return Math.Abs(num) * -1;
+    }
+
+    // Flips gravity upside down/back to normal depending on isFlipped
+    // Applies a gravity multiplier (mult) to make gravity less/more intense
+    public void SetGravity(bool isFlipped, float mult) {
+        if(isFlipped) {
+            ApplyToGravFields(MakeNegative);
+        } else {
+            ApplyToGravFields(Math.Abs);
+        }
+
+        // Reverse previous multiplier and apply new multiplier
+        midairGravScale = (midairGravScale / gravMultiplier) * mult;
+        gravMultiplier = mult;
     }
 }
