@@ -16,4 +16,8 @@ public class File : MonoBehaviour
         //Restore the file sprite
         Debug.Log(fileName + " has been restored by cybersecurity.");
     }
+
+    public void SetSelected(bool selected) {
+        // change sprite to selected
+    }
 }

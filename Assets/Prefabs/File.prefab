@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5337260913793168564}
   - component: {fileID: 156087219968710394}
   - component: {fileID: 2375478462739818477}
+  - component: {fileID: 6949745207802733810}
   m_Layer: 5
   m_Name: File
   m_TagString: Untagged
@@ -119,4 +120,32 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 156087219968710394}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &6949745207802733810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8624570322640370632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3f47fdca67adf49b9fb4fa9ffeb048, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fileName: 
+  isVulnerable: 0
+  isDeleted: 0
+  image: {fileID: 0}
