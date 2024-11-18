@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -43,6 +44,29 @@ public class PlayerMovement : MonoBehaviour
     private bool canBoost = true;
     private float gravMultiplier = 1;
 
+    PlayerControls controls;
+
+    private void Awake() {
+        controls = new PlayerControls();
+
+        // TODO Bind functions to actions
+        // TODO Change each function to remove input check
+        // TODO call UnDuck() when jump
+        controls.Platformer.Jump.performed += ctx => Jump();
+        controls.Platformer.Boost.performed += ctx => Boost();
+        controls.Platformer.Duck.performed += ctx => Duck();
+        controls.Platformer.Duck.canceled += ctx => UnDuck();
+        controls.Platformer.Restart.performed += ctx => RestartLevel();
+    }
+
+    private void OnEnable() {
+        controls.Platformer.Enable();
+    }
+
+    private void OnDisable() {
+        controls.Platformer.Disable();
+    }
+
     private void Start() {
         respawnPosition = transform.position;
         isFacingRight = faceRightOnSpawn;
@@ -54,6 +78,7 @@ public class PlayerMovement : MonoBehaviour
             EnforceMaxVelocity();
 
             // Set sprites accordingly
+            // TODO fix 
             if(gc.isGrounded) {
                 sr.sprite = sliding;
             } else {
@@ -74,15 +99,7 @@ public class PlayerMovement : MonoBehaviour
                 sr.flipX = false;
             }
 
-            Jump();
             Skidding();
-            Ducking();
-            Boosting();
-
-            // Restart Level
-            if(Input.GetKeyDown(KeyCode.R)) {
-                RestartLevel();
-            }
         }
     }
 
@@ -99,11 +116,9 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-
-    // Called in Update()
     // Handles jumping when the player presses the jump button
     private void Jump() {
-        if(gc.isGrounded && Input.GetKeyDown(KeyCode.Space)) {
+        if(gc.isGrounded) {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
         }
     }
@@ -119,34 +134,35 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // Called in Update()
     // Handles ducking when the player holds the down button
-    private void Ducking() {
-        if(Input.GetKey(KeyCode.S) && gc.isGrounded) {
+    private void Duck() {
+        if(gc.isGrounded) {
             rb.gravityScale = duckGravScale;
             sr.sprite = ducking;
 
             ShrinkHitboxes(true);
-        } else {
-            // Set gravity scale for when not ducking
-            if(gc.isGrounded) {
-                if(rb.velocity.y > 0) {
-                    rb.gravityScale = slopeAccelUp;
-                } else {
-                    rb.gravityScale = slopeAccel;
-                }
-            } else {
-                rb.gravityScale = midairGravScale;
-            }
-
-            ShrinkHitboxes(false);
         }
     }
 
-    // Called in Update()
+    // Called when player lets go of the Duck button
+    private void UnDuck() {
+        // Set gravity scale for when not ducking
+        if(gc.isGrounded) {
+            if(rb.velocity.y > 0) {
+                rb.gravityScale = slopeAccelUp;
+            } else {
+                rb.gravityScale = slopeAccel;
+            }
+        } else {
+            rb.gravityScale = midairGravScale;
+        }
+
+        ShrinkHitboxes(false);
+    }
+
     // Handles boosting when the player presses the boost button
-    private void Boosting() {
-        if(canBoost && Input.GetKeyDown(KeyCode.Return)) {
+    private void Boost() {
+        if(canBoost) {
             Vector2 boost = new Vector2(boostSpeed, rb.velocity.y);
 
             if(isFacingRight) {
