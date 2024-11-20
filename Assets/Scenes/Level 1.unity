@@ -25232,7 +25232,7 @@ MonoBehaviour:
   maxVelocity: 20
   boostSpeed: 20
   boostCooldown: 1
-  jumpForce: 17
+  jumpForce: 18
   dragWhenStopping: 1
   midairGravScale: 5
   slopeAccel: 6

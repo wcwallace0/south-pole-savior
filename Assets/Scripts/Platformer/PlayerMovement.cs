@@ -42,6 +42,9 @@ public class PlayerMovement : MonoBehaviour
     private bool isFacingRight;
     private bool isDead = false;
     private bool canBoost = true;
+    private bool isHoldingDown = false;
+    private bool isHoldingLeft = false;
+    private bool isHoldingRight = false;
     private float gravMultiplier = 1;
 
     PlayerControls controls;
@@ -49,13 +52,18 @@ public class PlayerMovement : MonoBehaviour
     private void Awake() {
         controls = new PlayerControls();
 
-        // TODO Bind functions to actions
-        // TODO Change each function to remove input check
-        // TODO call UnDuck() when jump
         controls.Platformer.Jump.performed += ctx => Jump();
         controls.Platformer.Boost.performed += ctx => Boost();
-        controls.Platformer.Duck.performed += ctx => Duck();
-        controls.Platformer.Duck.canceled += ctx => UnDuck();
+
+        controls.Platformer.Duck.performed += ctx => {isHoldingDown = true;};
+        controls.Platformer.Duck.canceled += ctx => {isHoldingDown = false;};
+
+        controls.Platformer.MoveRight.performed += ctx => {isHoldingRight = true;};
+        controls.Platformer.MoveRight.canceled += ctx => {isHoldingRight = false;};
+
+        controls.Platformer.MoveLeft.performed += ctx => {isHoldingLeft = true;};
+        controls.Platformer.MoveLeft.canceled += ctx => {isHoldingLeft = false;};
+
         controls.Platformer.Restart.performed += ctx => RestartLevel();
     }
 
@@ -78,7 +86,6 @@ public class PlayerMovement : MonoBehaviour
             EnforceMaxVelocity();
 
             // Set sprites accordingly
-            // TODO fix 
             if(gc.isGrounded) {
                 sr.sprite = sliding;
             } else {
@@ -88,18 +95,8 @@ public class PlayerMovement : MonoBehaviour
             // for display in inspector
             xVelocity = rb.velocity.x;
 
-            // Direction
-            if(Input.GetKeyDown(KeyCode.D) && !isFacingRight) {
-                // face right
-                isFacingRight = true;
-                sr.flipX = true;
-            } else if(Input.GetKeyDown(KeyCode.A) && isFacingRight) {
-                // face left
-                isFacingRight = false;
-                sr.flipX = false;
-            }
-
-            Skidding();
+            Movement();
+            Ducking();
         }
     }
 
@@ -119,15 +116,28 @@ public class PlayerMovement : MonoBehaviour
     // Handles jumping when the player presses the jump button
     private void Jump() {
         if(gc.isGrounded) {
+            rb.gravityScale = midairGravScale;
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
         }
     }
 
     // Called in Update()
+    // Sets direction of player based on player input
     // Checks if the player is holding in the direction opposite of their movement
     // If so, increase drag so player skids to a stop
-    private void Skidding() {
-        if((rb.velocity.x > 0 && Input.GetKey(KeyCode.A)) || (rb.velocity.x < 0 && Input.GetKey(KeyCode.D))) {
+    private void Movement() {
+        // Direction
+        if(isHoldingRight && !isFacingRight) {
+            // face right
+            isFacingRight = true;
+            sr.flipX = true;
+        } else if(isHoldingLeft && isFacingRight) {
+            // face left
+            isFacingRight = false;
+            sr.flipX = false;
+        }
+        
+        if((rb.velocity.x > 0 && isHoldingLeft) || (rb.velocity.x < 0 && isHoldingRight)) {
             rb.drag = dragWhenStopping;
         } else {
             rb.drag = 0;
@@ -135,29 +145,26 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // Handles ducking when the player holds the down button
-    private void Duck() {
-        if(gc.isGrounded) {
+    private void Ducking() {
+        if(isHoldingDown && gc.isGrounded) {
             rb.gravityScale = duckGravScale;
             sr.sprite = ducking;
 
             ShrinkHitboxes(true);
-        }
-    }
-
-    // Called when player lets go of the Duck button
-    private void UnDuck() {
-        // Set gravity scale for when not ducking
-        if(gc.isGrounded) {
-            if(rb.velocity.y > 0) {
-                rb.gravityScale = slopeAccelUp;
-            } else {
-                rb.gravityScale = slopeAccel;
-            }
         } else {
-            rb.gravityScale = midairGravScale;
-        }
+            // Set gravity scale for when not ducking
+            if(gc.isGrounded) {
+                if(rb.velocity.y > 0) {
+                    rb.gravityScale = slopeAccelUp;
+                } else {
+                    rb.gravityScale = slopeAccel;
+                }
+            } else {
+                rb.gravityScale = midairGravScale;
+            }
 
-        ShrinkHitboxes(false);
+            ShrinkHitboxes(false);
+        }
     }
 
     // Handles boosting when the player presses the boost button
