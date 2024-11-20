@@ -2385,6 +2385,56 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4649208344032822308, guid: b56159bab2e4db049b30dfbc060b98ce, type: 3}
   m_PrefabInstance: {fileID: 406352983}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2005678841
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2005678843}
+  - component: {fileID: 2005678842}
+  m_Layer: 0
+  m_Name: Cybersecurity
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2005678842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2005678841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99927fcdf37fa274eaed332ec13c5580, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPwned: 0
+  actionPoints: 0
+  ipProgress: 0
+  player: {fileID: 2113254415}
+  isFindIPActive: 1
+  ipTimer: 2
+--- !u!4 &2005678843
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2005678841}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2062333756
 GameObject:
   m_ObjectHideFlags: 0
@@ -2837,6 +2887,10 @@ PrefabInstance:
       value: GameLogic
       objectReference: {fileID: 0}
     - target: {fileID: 9092249418164087100, guid: 0823d66d7a6d49f4e9fa4ca70e198ae0, type: 3}
+      propertyPath: cybersec
+      value: 
+      objectReference: {fileID: 2005678842}
+    - target: {fileID: 9092249418164087100, guid: 0823d66d7a6d49f4e9fa4ca70e198ae0, type: 3}
       propertyPath: currentFolder
       value: 
       objectReference: {fileID: 626416192}
@@ -2857,3 +2911,4 @@ SceneRoots:
   - {fileID: 1378547464}
   - {fileID: 1745444927}
   - {fileID: 2381753311085491097}
+  - {fileID: 2005678843}

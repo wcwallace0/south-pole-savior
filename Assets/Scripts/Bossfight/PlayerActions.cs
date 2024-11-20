@@ -79,6 +79,7 @@ public class PlayerActions : MonoBehaviour
         if (selectedFile.isVulnerable)
         {
             selectedFile.SetCorrupted(true);
+            cybersec.fixFile(selectedFile);
             DeselectFile();
         } 
         else
@@ -113,7 +114,6 @@ public class PlayerActions : MonoBehaviour
     public void Defeat()
     {
         Debug.Log("Lose condition met for player, you lose =(");
-
 
     }
 }

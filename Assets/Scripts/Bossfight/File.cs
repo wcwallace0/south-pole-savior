@@ -14,12 +14,6 @@ public class File : MonoBehaviour
     public Sprite selected;
     public Sprite corrupted;
 
-    public void RestoreFile(){
-        isCorrupted = false;
-        //Restore the file sprite
-        Debug.Log(fileName + " has been restored by cybersecurity.");
-    }
-
     public void SetSelected(bool isSelected) {
         // change sprite to selected
         GetComponent<Image>().sprite = isSelected ? selected : normal;
@@ -29,5 +23,11 @@ public class File : MonoBehaviour
         GetComponent<Button>().enabled = !corrupt;
         isCorrupted = corrupt;
         GetComponent<Image>().sprite = corrupt ? corrupted : normal;
+
+        if(corrupt) {
+            Debug.Log(fileName + " has been corrupted by player.");
+        } else {
+            Debug.Log(fileName + " has been restored by cybersecurity.");
+        }
     }
 }
