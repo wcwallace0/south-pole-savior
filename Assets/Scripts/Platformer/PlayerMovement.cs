@@ -45,6 +45,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isHoldingDown = false;
     private bool isHoldingLeft = false;
     private bool isHoldingRight = false;
+    private bool isUpsideDown = false;
     private float gravMultiplier = 1;
 
     PlayerControls controls;
@@ -146,7 +147,7 @@ public class PlayerMovement : MonoBehaviour
 
     // Handles ducking when the player holds the down button
     private void Ducking() {
-        if(isHoldingDown && gc.isGrounded) {
+        if(isHoldingDown && gc.isGrounded && !isUpsideDown) {
             rb.gravityScale = duckGravScale;
             sr.sprite = ducking;
 
@@ -256,30 +257,17 @@ public class PlayerMovement : MonoBehaviour
 
     // GRAVITY FIELDS
 
-    // Takes a function that is applied to all gravity related fields
-    // Pass in MakeNegative() to flip gravity
-    // Pass in Math.Abs() to return gravity to normal
-    private void ApplyToGravFields(Func<float, float> f) {
-        transform.localScale = new Vector3(transform.localScale.x, f(transform.localScale.y), transform.localScale.z);
-        midairGravScale = f(midairGravScale);
-        slopeAccel = f(slopeAccel);
-        slopeAccelUp = f(slopeAccelUp);
-        duckGravScale = f(duckGravScale);
-        jumpForce = f(jumpForce);
-    }
-
-    // Makes a number negative whether it is already negative or not
-    private float MakeNegative(float num) {
-        return Math.Abs(num) * -1;
-    }
-
     // Flips gravity upside down/back to normal depending on isFlipped
     // Applies a gravity multiplier (mult) to make gravity less/more intense
-    public void SetGravity(bool isFlipped, float mult) {
-        if(isFlipped) {
-            ApplyToGravFields(MakeNegative);
-        } else {
-            ApplyToGravFields(Math.Abs);
+    public void SetGravity(bool setFlipped, float mult) {
+        if(setFlipped != isUpsideDown) {
+            isUpsideDown = !isUpsideDown;
+            transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y * -1, transform.localScale.z);
+            midairGravScale *= -1;
+            slopeAccel *= -1;
+            slopeAccelUp *= -1;
+            duckGravScale *= -1;
+            jumpForce *= -1;
         }
 
         // Reverse previous multiplier and apply new multiplier
