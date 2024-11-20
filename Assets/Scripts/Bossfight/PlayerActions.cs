@@ -78,11 +78,10 @@ public class PlayerActions : MonoBehaviour
     {
         if (selectedFile.isVulnerable)
         {
-            selectedFile.isDeleted = true;
-            selectedFile.image.enabled = false;
-            //make file sprite disappear
-
-        } else
+            selectedFile.SetCorrupted(true);
+            DeselectFile();
+        } 
+        else
         {
             Debug.Log("Delete file failed; insufficient permissions");
         }
