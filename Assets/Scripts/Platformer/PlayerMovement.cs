@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -40,7 +42,42 @@ public class PlayerMovement : MonoBehaviour
     private bool isFacingRight;
     private bool isDead = false;
     private bool canBoost = true;
+    private bool isHoldingDown = false;
+    private bool isHoldingLeft = false;
+    private bool isHoldingRight = false;
+    private bool isUpsideDown = false;
     private float gravMultiplier = 1;
+    private Camera cam;
+
+    PlayerControls controls;
+
+    private void Awake() {
+        controls = new PlayerControls();
+
+        controls.Platformer.Jump.performed += ctx => Jump();
+        controls.Platformer.Boost.performed += ctx => Boost();
+
+        controls.Platformer.Duck.performed += ctx => {isHoldingDown = true;};
+        controls.Platformer.Duck.canceled += ctx => {isHoldingDown = false;};
+
+        controls.Platformer.MoveRight.performed += ctx => {isHoldingRight = true;};
+        controls.Platformer.MoveRight.canceled += ctx => {isHoldingRight = false;};
+
+        controls.Platformer.MoveLeft.performed += ctx => {isHoldingLeft = true;};
+        controls.Platformer.MoveLeft.canceled += ctx => {isHoldingLeft = false;};
+
+        controls.Platformer.Restart.performed += ctx => RestartLevel();
+
+        // TODO Get main camera
+    }
+
+    private void OnEnable() {
+        controls.Platformer.Enable();
+    }
+
+    private void OnDisable() {
+        controls.Platformer.Disable();
+    }
 
     private void Start() {
         respawnPosition = transform.position;
@@ -62,21 +99,8 @@ public class PlayerMovement : MonoBehaviour
             // for display in inspector
             xVelocity = rb.velocity.x;
 
-            // Direction
-            if(Input.GetKeyDown(KeyCode.D) && !isFacingRight) {
-                // face right
-                isFacingRight = true;
-                sr.flipX = true;
-            } else if(Input.GetKeyDown(KeyCode.A) && isFacingRight) {
-                // face left
-                isFacingRight = false;
-                sr.flipX = false;
-            }
-
-            Jump();
-            Skidding();
+            Movement();
             Ducking();
-            Boosting();
         }
     }
 
@@ -93,30 +117,40 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-
-    // Called in Update()
     // Handles jumping when the player presses the jump button
     private void Jump() {
-        if(gc.isGrounded && Input.GetKeyDown(KeyCode.Space)) {
+        if(gc.isGrounded) {
+            rb.gravityScale = midairGravScale;
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
         }
     }
 
     // Called in Update()
+    // Sets direction of player based on player input
     // Checks if the player is holding in the direction opposite of their movement
     // If so, increase drag so player skids to a stop
-    private void Skidding() {
-        if((rb.velocity.x > 0 && Input.GetKey(KeyCode.A)) || (rb.velocity.x < 0 && Input.GetKey(KeyCode.D))) {
+    private void Movement() {
+        // Direction
+        if(isHoldingRight && !isFacingRight) {
+            // face right
+            isFacingRight = true;
+            sr.flipX = true;
+        } else if(isHoldingLeft && isFacingRight) {
+            // face left
+            isFacingRight = false;
+            sr.flipX = false;
+        }
+        
+        if((rb.velocity.x > 0 && isHoldingLeft) || (rb.velocity.x < 0 && isHoldingRight)) {
             rb.drag = dragWhenStopping;
         } else {
             rb.drag = 0;
         }
     }
 
-    // Called in Update()
     // Handles ducking when the player holds the down button
     private void Ducking() {
-        if(Input.GetKey(KeyCode.S) && gc.isGrounded) {
+        if(isHoldingDown && gc.isGrounded && !isUpsideDown) {
             rb.gravityScale = duckGravScale;
             sr.sprite = ducking;
 
@@ -137,10 +171,9 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // Called in Update()
     // Handles boosting when the player presses the boost button
-    private void Boosting() {
-        if(canBoost && Input.GetKeyDown(KeyCode.Return)) {
+    private void Boost() {
+        if(canBoost) {
             Vector2 boost = new Vector2(boostSpeed, rb.velocity.y);
 
             if(isFacingRight) {
@@ -182,6 +215,13 @@ public class PlayerMovement : MonoBehaviour
 
     // DEATH AND CHECKPOINTS
 
+    // Called when player presses restart button (R)
+    private void RestartLevel() {
+        // Reload scene
+        string currentScene = SceneManager.GetActiveScene().name;
+        SceneManager.LoadScene(currentScene);
+    }
+
     public void Death() {
         isDead = true;
         rb.gravityScale = 0;
@@ -220,30 +260,17 @@ public class PlayerMovement : MonoBehaviour
 
     // GRAVITY FIELDS
 
-    // Takes a function that is applied to all gravity related fields
-    // Pass in MakeNegative() to flip gravity
-    // Pass in Math.Abs() to return gravity to normal
-    private void ApplyToGravFields(Func<float, float> f) {
-        transform.localScale = new Vector3(transform.localScale.x, f(transform.localScale.y), transform.localScale.z);
-        midairGravScale = f(midairGravScale);
-        slopeAccel = f(slopeAccel);
-        slopeAccelUp = f(slopeAccelUp);
-        duckGravScale = f(duckGravScale);
-        jumpForce = f(jumpForce);
-    }
-
-    // Makes a number negative whether it is already negative or not
-    private float MakeNegative(float num) {
-        return Math.Abs(num) * -1;
-    }
-
     // Flips gravity upside down/back to normal depending on isFlipped
     // Applies a gravity multiplier (mult) to make gravity less/more intense
-    public void SetGravity(bool isFlipped, float mult) {
-        if(isFlipped) {
-            ApplyToGravFields(MakeNegative);
-        } else {
-            ApplyToGravFields(Math.Abs);
+    public void SetGravity(bool setFlipped, float mult) {
+        if(setFlipped != isUpsideDown) {
+            isUpsideDown = !isUpsideDown;
+            transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y * -1, transform.localScale.z);
+            midairGravScale *= -1;
+            slopeAccel *= -1;
+            slopeAccelUp *= -1;
+            duckGravScale *= -1;
+            jumpForce *= -1;
         }
 
         // Reverse previous multiplier and apply new multiplier
