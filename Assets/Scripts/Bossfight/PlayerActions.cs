@@ -7,12 +7,21 @@ using UnityEngine.UI;
 public class PlayerActions : MonoBehaviour
 {
     public Folder currentFolder;
-    public bool isAtRoot = true;
-    public File selectedFile;
     public int playerHealth;
     public Cybersecurity cybersec;
 
-    public Button deleteFileButton;
+    [Header("Buttons")]
+    public Button zipButton;
+    public float zipButtonCooldown;
+    public Button deleteButton;
+    public float deleteButtonCooldown;
+    public Button ddosButton;
+    public float ddosButtonCooldown;
+    public Button ipButton;
+    public float ipButtonCooldown;
+
+    private bool isAtRoot = true;
+    private File selectedFile;
 
     public void NavigateFolder(Folder newFolder) {
         DeselectFile();
@@ -37,14 +46,14 @@ public class PlayerActions : MonoBehaviour
     public void SelectFile(File fl) {
         selectedFile = fl;
         selectedFile.SetSelected(true);
-        deleteFileButton.interactable = true;
+        deleteButton.interactable = true;
     }
 
     public void DeselectFile() {
         if(selectedFile != null) {
             selectedFile.SetSelected(false);
             selectedFile = null;
-            deleteFileButton.interactable = false;
+            deleteButton.interactable = false;
         }
     }
 
@@ -59,6 +68,7 @@ public class PlayerActions : MonoBehaviour
             //{
                 currentFolder.Corrupt();
                 NavigateBack();
+                StartCoroutine(ButtonCooldown(zipButton, zipButtonCooldown));
                 Debug.Log("ZIP Bomb success, folder corrupted.");
                 //corrupt all files in the folder
             //}
@@ -75,12 +85,17 @@ public class PlayerActions : MonoBehaviour
     }
 
     public void DeleteFile()
-    {
+    {      
         if (selectedFile.isVulnerable)
         {
             selectedFile.SetCorrupted(true);
             cybersec.fixFile(selectedFile);
             DeselectFile();
+            StartCoroutine(ButtonCooldown(deleteButton, deleteButtonCooldown));
+
+            // iterate through all folders,
+            // call folder.UpdateIsBombable()
+            // if isBombable is true after, display message
         } 
         else
         {
@@ -93,27 +108,29 @@ public class PlayerActions : MonoBehaviour
         //as they attempt to restore the file, which will give the player more time to do other things
     }
 
-    public void Ddos()
-    {
+    public void DDOS() {
         cybersec.GetPwned();
+        StartCoroutine(ButtonCooldown(ddosButton, ddosButtonCooldown));
+    }
 
-        //on DDOS button click, this is essentially an ultimate ability for the player
-        //more than a cooldown, it will likely need to be "charged", which is a mechanic I still
-        //need to figure out. If successful, the DDOS attack will disable the opponent from taking any
-        //action, giving the player time to do more things.
-    } 
-
+    //on IP switch button click, this is a defensive move for the player. there might be a constant
+    //timer where the player will be locked out of certain folders unless they switch their IP,
+    //and possibly a constant timer which tracks how long it's been since the player switched IPs.
+    //if that timer expires the player will be locked out of the system and lose automatically.
     public void IpSwitch()
     {
-        //on IP switch button click, this is a defensive move for the player. there might be a constant
-        //timer where the player will be locked out of certain folders unless they switch their IP,
-        //and possibly a constant timer which tracks how long it's been since the player switched IPs.
-        //if that timer expires the player will be locked out of the system and lose automatically.
+        cybersec.ipProgress = 0;
+        StartCoroutine(ButtonCooldown(ipButton, ipButtonCooldown));
+    }
+
+    IEnumerator ButtonCooldown(Button button, float cooldown) {
+        button.interactable = false;
+        yield return new WaitForSeconds(cooldown);
+        button.interactable = true;
     }
 
     public void Defeat()
     {
         Debug.Log("Lose condition met for player, you lose =(");
-
     }
 }

@@ -17,9 +17,7 @@ public class Cybersecurity : MonoBehaviour
     public bool gameOver;
     public bool fileCorrupted;
     public static List<File> corruptedFiles;
-    public float ddosCooldown;
-    public float ddosButtonCooldown;
-    public Button ddosButton;
+    public float ddosInactivityTime;
 
     // Start is called before the first frame update
     void Start()
@@ -27,12 +25,6 @@ public class Cybersecurity : MonoBehaviour
         actionPoints = maxPoints;
         corruptedFiles = new List<File>();
         StartCoroutine(FindIP());
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     void FixedUpdate(){
@@ -49,14 +41,16 @@ public class Cybersecurity : MonoBehaviour
         }
     }
 
+    //on DDOS button click, this is essentially an ultimate ability for the player
+    //more than a cooldown, it will likely need to be "charged", which is a mechanic I still
+    //need to figure out. If successful, the DDOS attack will disable the opponent from taking any
+    //action, giving the player time to do more things.
     public void GetPwned(){
         isPwned = true;
         actionPoints = 0;
         ipProgress= 0;
         StopAllCoroutines();
-        ddosButton.interactable = false;
-        StartCoroutine(DDOSCooldown());
-        StartCoroutine(DDOSButtonCooldown());
+        StartCoroutine(DisableCybersec());
     }
 
     public void UnPwned(){
@@ -65,14 +59,9 @@ public class Cybersecurity : MonoBehaviour
         StartCoroutine(FindIP());
     }
 
-    IEnumerator DDOSCooldown() {
-        yield return new WaitForSeconds(ddosCooldown);
+    IEnumerator DisableCybersec() {
+        yield return new WaitForSeconds(ddosInactivityTime);
         UnPwned();
-    }
-
-    IEnumerator DDOSButtonCooldown() {
-        yield return new WaitForSeconds(ddosButtonCooldown);
-        ddosButton.interactable = true;
     }
 
     public void fixFile(File file){

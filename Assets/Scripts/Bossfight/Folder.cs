@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,6 +20,7 @@ public class Folder : MonoBehaviour
     public GameObject[,] grid;
     public bool isBombable;
     public bool isBombed;
+    public GameObject[] fileDependencies;
 
     private void Start() {
         grid = new GameObject[rows,cols];
@@ -87,8 +89,29 @@ public class Folder : MonoBehaviour
     }
 
     public void Corrupt() {
-        gameObject.GetComponent<Image>().sprite = corruptedSprite;
-        gameObject.GetComponent<Button>().enabled = false;
-        isBombed = true;
+        if(isBombable) {
+            gameObject.GetComponent<Image>().sprite = corruptedSprite;
+            gameObject.GetComponent<Button>().enabled = false;
+            isBombed = true;
+        }
+    }
+
+    // TODO
+    // because File needs this as well, consider making a superclass
+    // that encapsulates Folder and File, so they can share this functionality?
+    public void UpdateIsBombable() {
+        bool newValue = true;
+        foreach(GameObject file in fileDependencies) {
+            File fl = file.GetComponent<File>();
+            Folder fld = file.GetComponent<Folder>();
+
+            if(fl != null && !fl.isCorrupted) {
+                newValue = false;
+            } else if(fld != null && !fld.isBombed) {
+                newValue = false;
+            }
+        }
+
+        isBombable = newValue;
     }
 }
