@@ -47,6 +47,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isHoldingRight = false;
     private bool isUpsideDown = false;
     private float gravMultiplier = 1;
+    private Camera cam;
 
     PlayerControls controls;
 
@@ -66,6 +67,8 @@ public class PlayerMovement : MonoBehaviour
         controls.Platformer.MoveLeft.canceled += ctx => {isHoldingLeft = false;};
 
         controls.Platformer.Restart.performed += ctx => RestartLevel();
+
+        // TODO Get main camera
     }
 
     private void OnEnable() {
