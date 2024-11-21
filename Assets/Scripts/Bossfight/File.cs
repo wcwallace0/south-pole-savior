@@ -25,8 +25,10 @@ public class File : MonoBehaviour
         GetComponent<Image>().sprite = corrupt ? corrupted : normal;
 
         if(corrupt) {
+            Cybersecurity.corruptedFiles.Add(this);
             Debug.Log(fileName + " has been corrupted by player.");
         } else {
+            Cybersecurity.corruptedFiles.Remove(this);
             Debug.Log(fileName + " has been restored by cybersecurity.");
         }
     }
