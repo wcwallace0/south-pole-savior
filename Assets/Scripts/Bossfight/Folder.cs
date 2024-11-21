@@ -12,9 +12,13 @@ public class Folder : MonoBehaviour
     public RectTransform rectTransform;
     public bool isRoot;
 
+    public Sprite normalSprite;
+    public Sprite corruptedSprite;
+
     [HideInInspector]
     public GameObject[,] grid;
     public bool isBombable;
+    public bool isBombed;
 
     private void Start() {
         grid = new GameObject[rows,cols];
@@ -70,8 +74,21 @@ public class Folder : MonoBehaviour
         foreach(GameObject file in grid) {
             if(file != null) {
                 file.GetComponent<Image>().enabled = isActive;
-                file.GetComponent<Button>().enabled = isActive;
+                
+                Button b = file.GetComponent<Button>();
+                Folder f = file.GetComponent<Folder>();
+                if(f != null && !f.isBombed) {
+                    b.enabled = isActive;
+                } else if(f == null) {
+                    b.enabled = isActive;
+                }
             }
         }
+    }
+
+    public void Corrupt() {
+        gameObject.GetComponent<Image>().sprite = corruptedSprite;
+        gameObject.GetComponent<Button>().enabled = false;
+        isBombed = true;
     }
 }

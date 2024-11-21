@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerActions : MonoBehaviour
 {
@@ -11,7 +12,10 @@ public class PlayerActions : MonoBehaviour
     public int playerHealth;
     public Cybersecurity cybersec;
 
+    public Button deleteFileButton;
+
     public void NavigateFolder(Folder newFolder) {
+        DeselectFile();
         newFolder.Navigate(currentFolder);
         currentFolder = newFolder;
         isAtRoot = false;
@@ -19,6 +23,7 @@ public class PlayerActions : MonoBehaviour
 
     public void NavigateBack() {
         if(!isAtRoot) {
+            DeselectFile();
             Folder parent = currentFolder.transform.parent.GetComponent<Folder>();
             parent.Navigate(currentFolder);
             currentFolder = parent;
@@ -26,6 +31,20 @@ public class PlayerActions : MonoBehaviour
             if(parent.isRoot) {
                 isAtRoot = true;
             }
+        }
+    }
+
+    public void SelectFile(File fl) {
+        selectedFile = fl;
+        selectedFile.SetSelected(true);
+        deleteFileButton.interactable = true;
+    }
+
+    public void DeselectFile() {
+        if(selectedFile != null) {
+            selectedFile.SetSelected(false);
+            selectedFile = null;
+            deleteFileButton.interactable = false;
         }
     }
 
@@ -38,7 +57,8 @@ public class PlayerActions : MonoBehaviour
                 //activate fight phase two
             //} else
             //{
-                currentFolder.grid = new GameObject[currentFolder.rows,currentFolder.cols];
+                currentFolder.Corrupt();
+                NavigateBack();
                 Debug.Log("ZIP Bomb success, folder corrupted.");
                 //corrupt all files in the folder
             //}
@@ -58,11 +78,11 @@ public class PlayerActions : MonoBehaviour
     {
         if (selectedFile.isVulnerable)
         {
-            selectedFile.isDeleted = true;
-            selectedFile.image.enabled = false;
-            //make file sprite disappear
-
-        } else
+            selectedFile.SetCorrupted(true);
+            cybersec.fixFile(selectedFile);
+            DeselectFile();
+        } 
+        else
         {
             Debug.Log("Delete file failed; insufficient permissions");
         }
@@ -94,7 +114,6 @@ public class PlayerActions : MonoBehaviour
     public void Defeat()
     {
         Debug.Log("Lose condition met for player, you lose =(");
-
 
     }
 }
