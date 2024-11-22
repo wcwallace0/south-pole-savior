@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6942981635149174942}
   - component: {fileID: 4853524251390684390}
   - component: {fileID: 4855985979703327007}
+  - component: {fileID: 6286858848113803129}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -68,7 +69,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 8
+  orthographic size: 9
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -92,6 +93,23 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 101300487769211018}
   m_Enabled: 1
+--- !u!114 &6286858848113803129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 101300487769211018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e830e2d478560a14b87a149cc0a360de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minZoom: 9
+  maxZoom: 12
+  zoomThreshold: 8
+  zoomSpeed: 0.02
+  pm: {fileID: 8346265678733256478}
 --- !u!1 &2327172784342161954
 GameObject:
   m_ObjectHideFlags: 0
@@ -248,7 +266,7 @@ MonoBehaviour:
   maxVelocity: 20
   boostSpeed: 20
   boostCooldown: 1
-  jumpForce: 17
+  jumpForce: 18
   dragWhenStopping: 1
   midairGravScale: 5
   slopeAccel: 6
