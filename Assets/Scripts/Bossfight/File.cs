@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.UI;
 
 public class File : MonoBehaviour
@@ -32,9 +33,11 @@ public class File : MonoBehaviour
 
         if(corrupt) {
             Cybersecurity.corruptedFiles.Add(this);
+            StartCoroutine(PlayerActions.Alert(PlayerActions.succCorrupt));
             Debug.Log(fileName + " has been corrupted by player.");
         } else {
             Cybersecurity.corruptedFiles.Remove(this);
+            StartCoroutine(PlayerActions.Alert(PlayerActions.fileRestored));
             Debug.Log(fileName + " has been restored by cybersecurity.");
         }
 

@@ -21,9 +21,18 @@ public class PlayerActions : MonoBehaviour
     public float ipButtonCooldown;
 
     [Header("Alert Boxes")]
+    public static float alertDuration;
+    public static GameObject succCorrupt;
+    public static GameObject fileRestored;
+    public static GameObject failCorrupt;
 
     private bool isAtRoot = true;
     private File selectedFile;
+
+    private void Awake() {
+        succCorrupt = GameObject.Find("Text_SuccZip");
+        fileRestored = GameObject.Find("Text_FileRestored");
+    }
 
     public void NavigateFolder(Folder newFolder) {
         DeselectFile();
@@ -102,6 +111,7 @@ public class PlayerActions : MonoBehaviour
         } 
         else
         {
+            StartCoroutine(Alert(failCorrupt));
             Debug.Log("Corrupt file failed; insufficient permissions");
         }
 
@@ -135,5 +145,11 @@ public class PlayerActions : MonoBehaviour
     public void Defeat()
     {
         Debug.Log("Lose condition met for player, you lose =(");
+    }
+
+    public static IEnumerator Alert(GameObject alertBox) {
+        alertBox.SetActive(true);
+        yield return new WaitForSeconds(alertDuration);
+        alertBox.SetActive(false);
     }
 }
