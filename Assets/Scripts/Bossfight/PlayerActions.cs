@@ -13,8 +13,8 @@ public class PlayerActions : MonoBehaviour
     [Header("Buttons")]
     public Button zipButton;
     public float zipButtonCooldown;
-    public Button deleteButton;
-    public float deleteButtonCooldown;
+    public Button corruptButton;
+    public float corruptButtonCooldown;
     public Button ddosButton;
     public float ddosButtonCooldown;
     public Button ipButton;
@@ -46,14 +46,14 @@ public class PlayerActions : MonoBehaviour
     public void SelectFile(File fl) {
         selectedFile = fl;
         selectedFile.SetSelected(true);
-        deleteButton.interactable = true;
+        corruptButton.interactable = true;
     }
 
     public void DeselectFile() {
         if(selectedFile != null) {
             selectedFile.SetSelected(false);
             selectedFile = null;
-            deleteButton.interactable = false;
+            corruptButton.interactable = false;
         }
     }
 
@@ -84,25 +84,26 @@ public class PlayerActions : MonoBehaviour
 
     }
 
-    public void DeleteFile()
+    public void CorruptFile()
     {      
         if (selectedFile.isVulnerable)
         {
             selectedFile.SetCorrupted(true);
             cybersec.fixFile(selectedFile);
             DeselectFile();
-            StartCoroutine(ButtonCooldown(deleteButton, deleteButtonCooldown));
-
+            StartCoroutine(ButtonCooldown(corruptButton, corruptButtonCooldown));
+            if (selectedFile.parent != null) selectedFile.parent.UpdateIsBombable();
+            
             // iterate through all folders,
             // call folder.UpdateIsBombable()
             // if isBombable is true after, display message
         } 
         else
         {
-            Debug.Log("Delete file failed; insufficient permissions");
+            Debug.Log("Corrupt file failed; insufficient permissions");
         }
 
-        //on Delete File button click, deletes whatever file is selected
+        //on corrupt File button click, corrupts whatever file is selected
         //unless player has insufficient permissions, in which case the player
         //will lose health. This will partially preoccupy the opponent (cybersec team)
         //as they attempt to restore the file, which will give the player more time to do other things

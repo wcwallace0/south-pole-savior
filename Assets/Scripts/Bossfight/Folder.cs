@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.AssetImporters;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,6 +22,7 @@ public class Folder : MonoBehaviour
     public bool isBombable;
     public bool isBombed;
     public GameObject[] fileDependencies;
+
 
     private void Start() {
         grid = new GameObject[rows,cols];
@@ -100,6 +102,7 @@ public class Folder : MonoBehaviour
     // because File needs this as well, consider making a superclass
     // that encapsulates Folder and File, so they can share this functionality?
     public void UpdateIsBombable() {
+        Debug.Log("UpdateIsBombable called");
         bool newValue = true;
         foreach(GameObject file in fileDependencies) {
             File fl = file.GetComponent<File>();
