@@ -20,6 +20,8 @@ public class PlayerActions : MonoBehaviour
     public Button ipButton;
     public float ipButtonCooldown;
 
+    [Header("Alert Boxes")]
+
     private bool isAtRoot = true;
     private File selectedFile;
 
@@ -90,9 +92,9 @@ public class PlayerActions : MonoBehaviour
         {
             selectedFile.SetCorrupted(true);
             cybersec.fixFile(selectedFile);
+            if (selectedFile.parent != null) selectedFile.parent.UpdateIsBombable();
             DeselectFile();
             StartCoroutine(ButtonCooldown(corruptButton, corruptButtonCooldown));
-            if (selectedFile.parent != null) selectedFile.parent.UpdateIsBombable();
             
             // iterate through all folders,
             // call folder.UpdateIsBombable()

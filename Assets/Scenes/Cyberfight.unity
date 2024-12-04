@@ -737,7 +737,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 6855490906102979237}
         m_TargetAssemblyTypeName: PlayerActions, Assembly-CSharp
-        m_MethodName: DeleteFile
+        m_MethodName: CorruptFile
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5772,8 +5772,8 @@ MonoBehaviour:
   cybersec: {fileID: 2005678842}
   zipButton: {fileID: 2062333758}
   zipButtonCooldown: 2
-  corruptButton: {fileID: 0}
-  corruptButtonCooldown: 0
+  corruptButton: {fileID: 165679383}
+  corruptButtonCooldown: 2
   ddosButton: {fileID: 284756222}
   ddosButtonCooldown: 2
   ipButton: {fileID: 2122324990}
