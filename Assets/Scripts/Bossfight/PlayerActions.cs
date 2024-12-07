@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class PlayerActions : MonoBehaviour
 {
     public Folder currentFolder;
+    public Alert alert;
     public int playerHealth;
     public Cybersecurity cybersec;
 
@@ -19,20 +20,57 @@ public class PlayerActions : MonoBehaviour
     public float ddosButtonCooldown;
     public Button ipButton;
     public float ipButtonCooldown;
+    public bool canDDOS;
 
-    [Header("Alert Boxes")]
-    public static float alertDuration;
-    public static GameObject succCorrupt;
-    public static GameObject fileRestored;
-    public static GameObject failCorrupt;
+    public float ddosTimer;
+
+    void Start(){
+        StartCoroutine(DDOSTimer(ddosTimer));
+    }
+
+    void Update(){
+        if (cybersec.isPwned){
+            canDDOS = false;
+            StartCoroutine(DDOSTimer(ddosTimer));
+        }
+    }
+
+    // [Header("Alert Boxes")]
+    // public static float alertDuration;
+    // public static bool isAlert;
+    // public static GameObject activeAlert;
+    // public static GameObject succCorrupt;
+    // public static GameObject fileRestored;
+    // public static GameObject failCorrupt;
+    // public static GameObject succDDOS;
+    // public static GameObject failDDOS;
+    // public static GameObject succZip;
+    // public static GameObject failZip;
+    // public static GameObject recoveryDDOS;
+    // public static GameObject ipWarning;
+    // public static GameObject ipSwitch;
+    // public static GameObject ddosAvailable;
+
 
     private bool isAtRoot = true;
     private File selectedFile;
 
-    private void Awake() {
-        succCorrupt = GameObject.Find("Text_SuccZip");
-        fileRestored = GameObject.Find("Text_FileRestored");
-    }
+    // private void Awake() {
+    //     isAlert = false;
+    //     activeAlert = null;
+    //     succCorrupt = GameObject.Find("Text_SuccZip");
+    //     fileRestored = GameObject.Find("Text_FileRestored");
+    //     failCorrupt = GameObject.Find("Text_FailCorrupt");
+    //     succDDOS = GameObject.Find("Text_SuccDDOS");
+    //     failDDOS = GameObject.Find("Text_FailDDOS");
+    //     succZip = GameObject.Find("Text_SuccZip");
+    //     failZip = GameObject.Find("Text_FailZip");
+    //     recoveryDDOS = GameObject.Find("Text_RecoveryDDOS");
+    //     ipWarning = GameObject.Find("Text_IPWarning");
+    //     ipSwitch = GameObject.Find("Text_IPSwitch");
+    //     ddosAvailable = GameObject.Find("Text_DDOSAvailable");
+
+    // }
 
     public void NavigateFolder(Folder newFolder) {
         DeselectFile();
@@ -80,11 +118,13 @@ public class PlayerActions : MonoBehaviour
                 currentFolder.Corrupt();
                 NavigateBack();
                 StartCoroutine(ButtonCooldown(zipButton, zipButtonCooldown));
+                alert.DisplayAlert(alert.succZip);
                 Debug.Log("ZIP Bomb success, folder corrupted.");
                 //corrupt all files in the folder
             //}
         } else
         {
+            alert.DisplayAlert(alert.failZip);
             Debug.Log("ZIP Bomb failed; insufficient file upload permissions");
         }
 
@@ -96,7 +136,7 @@ public class PlayerActions : MonoBehaviour
     }
 
     public void CorruptFile()
-    {      
+    {
         if (selectedFile.isVulnerable)
         {
             selectedFile.SetCorrupted(true);
@@ -104,14 +144,16 @@ public class PlayerActions : MonoBehaviour
             if (selectedFile.parent != null) selectedFile.parent.UpdateIsBombable();
             DeselectFile();
             StartCoroutine(ButtonCooldown(corruptButton, corruptButtonCooldown));
-            
+            alert.DisplayAlert(alert.succCorrupt);
+            alert.Test();
+            Debug.Log("Corrupt file success");
             // iterate through all folders,
             // call folder.UpdateIsBombable()
             // if isBombable is true after, display message
         } 
         else
         {
-            StartCoroutine(Alert(failCorrupt));
+            alert.DisplayAlert(alert.failCorrupt);
             Debug.Log("Corrupt file failed; insufficient permissions");
         }
 
@@ -122,8 +164,15 @@ public class PlayerActions : MonoBehaviour
     }
 
     public void DDOS() {
-        cybersec.GetPwned();
-        StartCoroutine(ButtonCooldown(ddosButton, ddosButtonCooldown));
+        if (canDDOS){
+            cybersec.GetPwned();
+            StartCoroutine(ButtonCooldown(ddosButton, ddosButtonCooldown));
+            alert.Test();
+            alert.DisplayAlert(alert.succDDOS);
+            alert.Test();
+        } else{
+            alert.DisplayAlert(alert.failDDOS);
+        }
     }
 
     //on IP switch button click, this is a defensive move for the player. there might be a constant
@@ -134,6 +183,8 @@ public class PlayerActions : MonoBehaviour
     {
         cybersec.ipProgress = 0;
         StartCoroutine(ButtonCooldown(ipButton, ipButtonCooldown));
+        alert.Test();
+        alert.DisplayAlert(alert.ipSwitch);
     }
 
     IEnumerator ButtonCooldown(Button button, float cooldown) {
@@ -147,9 +198,8 @@ public class PlayerActions : MonoBehaviour
         Debug.Log("Lose condition met for player, you lose =(");
     }
 
-    public static IEnumerator Alert(GameObject alertBox) {
-        alertBox.SetActive(true);
-        yield return new WaitForSeconds(alertDuration);
-        alertBox.SetActive(false);
+    IEnumerator DDOSTimer(float timer){
+        yield return new WaitForSeconds(timer);
+        canDDOS = true;
     }
 }

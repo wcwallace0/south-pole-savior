@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class Cybersecurity : MonoBehaviour
 {
+    public Alert alert;
     public bool isPwned = false; //boolean indicating whether the enemy is currently DDOSed
     public int actionPoints;
     public int maxPoints = 4;
@@ -39,6 +40,10 @@ public class Cybersecurity : MonoBehaviour
                 StartCoroutine(FindIP());
             }
         }
+
+        if (ipProgress == (maxPoints - 1)){
+            alert.DisplayAlert(alert.ipWarning);
+        }
     }
 
     //on DDOS button click, this is essentially an ultimate ability for the player
@@ -57,6 +62,7 @@ public class Cybersecurity : MonoBehaviour
         isPwned = false;
         actionPoints = maxPoints;
         StartCoroutine(FindIP());
+        alert.DisplayAlert(alert.recoveryDDOS);
     }
 
     IEnumerator DisableCybersec() {
@@ -97,6 +103,7 @@ public class Cybersecurity : MonoBehaviour
             yield return new WaitForSeconds(fixFileTimer);
             actionPoints ++;
             fl.SetCorrupted(false);
+            alert.DisplayAlert(alert.fileRestored);
         }
 
     }

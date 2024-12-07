@@ -25,6 +25,7 @@ public class Folder : MonoBehaviour
 
 
     private void Start() {
+        GetComponent<Image>().sprite = normalSprite;
         grid = new GameObject[rows,cols];
 
         // Fill the grid with the children of this gameobject

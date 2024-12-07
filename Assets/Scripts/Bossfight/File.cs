@@ -21,24 +21,38 @@ public class File : MonoBehaviour
 
     public GameObject[] dependents;
 
+    void Start(){
+        GetComponent<Image>().sprite = normal;
+    }
+
     public void SetSelected(bool isSelected) {
         // change sprite to selected
         GetComponent<Image>().sprite = isSelected ? selected : normal;
     }
 
     public void SetCorrupted(bool corrupt) {
+        
         GetComponent<Button>().enabled = !corrupt;
+        Debug.Log("boolean status in SetCorrupted: " + corrupt);
         isCorrupted = corrupt;
+        Debug.Log("boolean status in SetCorrupted: " + corrupt);
+
+
+        //TODO: This line (line 45) is not working and I (Colin) haven't been able to figure out why (hence the debug logs and test string).
+        //I've tried a few different things but there may be something obvious I'm just not seeing,
+        //I'm going to sleep on it and see if I can figure it out later, but if anyone else sees this
+        //feel free to give it a show.
         GetComponent<Image>().sprite = corrupt ? corrupted : normal;
+
+
+
+        String test = corrupt ? "corrupted" : "normal";
+        Debug.Log("File sprite: " + test);
 
         if(corrupt) {
             Cybersecurity.corruptedFiles.Add(this);
-            StartCoroutine(PlayerActions.Alert(PlayerActions.succCorrupt));
-            Debug.Log(fileName + " has been corrupted by player.");
         } else {
             Cybersecurity.corruptedFiles.Remove(this);
-            StartCoroutine(PlayerActions.Alert(PlayerActions.fileRestored));
-            Debug.Log(fileName + " has been restored by cybersecurity.");
         }
 
         foreach(GameObject dep in dependents) {
@@ -67,4 +81,5 @@ public class File : MonoBehaviour
 
         isVulnerable = newValue;
     }
+
 }

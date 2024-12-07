@@ -1511,16 +1511,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7100305977060664337, guid: a5089a7dc49273c4b9faed2882064656, type: 3}
       propertyPath: isBombable
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7100305977060664337, guid: a5089a7dc49273c4b9faed2882064656, type: 3}
       propertyPath: normalSprite
       value: 
-      objectReference: {fileID: 21300000, guid: 4348f729a13804542907a4672906f07e, type: 3}
+      objectReference: {fileID: 1497984199, guid: abfe8c50117469d41aef505c4529d691, type: 3}
     - target: {fileID: 7100305977060664337, guid: a5089a7dc49273c4b9faed2882064656, type: 3}
       propertyPath: corruptedSprite
       value: 
-      objectReference: {fileID: 21300000, guid: 6481780da79e206419fa49bbbe5d3606, type: 3}
+      objectReference: {fileID: 476553464, guid: abfe8c50117469d41aef505c4529d691, type: 3}
     - target: {fileID: 7189907225197509063, guid: a5089a7dc49273c4b9faed2882064656, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -4545,7 +4545,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1745444927}
   - component: {fileID: 1745444926}
-  - component: {fileID: 1745444925}
+  - component: {fileID: 1745444928}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -4553,26 +4553,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1745444925
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1745444924}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SendPointerHoverToParent: 1
-  m_HorizontalAxis: Horizontal
-  m_VerticalAxis: Vertical
-  m_SubmitButton: Submit
-  m_CancelButton: Cancel
-  m_InputActionsPerSecond: 10
-  m_RepeatDelay: 0.5
-  m_ForceModuleActive: 0
 --- !u!114 &1745444926
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4603,6 +4583,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1745444928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1745444924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
+  m_MoveRepeatDelay: 0.5
+  m_MoveRepeatRate: 0.1
+  m_XRTrackingOrigin: {fileID: 0}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_PointAction: {fileID: -1654692200621890270, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_MoveAction: {fileID: -8784545083839296357, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_SubmitAction: {fileID: 392368643174621059, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_CancelAction: {fileID: 7727032971491509709, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_LeftClickAction: {fileID: 3001919216989983466, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_MiddleClickAction: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_RightClickAction: {fileID: -4090225696740746782, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_ScrollWheelAction: {fileID: 6240969308177333660, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_TrackedDevicePositionAction: {fileID: 6564999863303420839, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: 7970375526676320489, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
 --- !u!224 &1806843275 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7552651842639160987, guid: a5089a7dc49273c4b9faed2882064656, type: 3}
@@ -5187,6 +5197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99927fcdf37fa274eaed332ec13c5580, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  alert: {fileID: 7330501899880766603}
   isPwned: 0
   actionPoints: 0
   maxPoints: 4
@@ -5748,6 +5759,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7330501899880766602}
   - component: {fileID: 6855490906102979237}
+  - component: {fileID: 7330501899880766603}
   m_Layer: 0
   m_Name: GameLogic
   m_TagString: Untagged
@@ -5768,6 +5780,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentFolder: {fileID: 626416192}
+  alert: {fileID: 7330501899880766603}
   playerHealth: 0
   cybersec: {fileID: 2005678842}
   zipButton: {fileID: 2062333758}
@@ -5778,6 +5791,8 @@ MonoBehaviour:
   ddosButtonCooldown: 2
   ipButton: {fileID: 2122324990}
   ipButtonCooldown: 2
+  canDDOS: 0
+  ddosTimer: 2
 --- !u!4 &7330501899880766602
 Transform:
   m_ObjectHideFlags: 0
@@ -5793,6 +5808,32 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7330501899880766603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5446522418932478884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 462977e6332cbe0498634a2a23e5f47f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isAlert: 0
+  activeAlert: {fileID: 0}
+  alertDuration: 2.5
+  succCorrupt: {fileID: 1153356822}
+  fileRestored: {fileID: 193231665}
+  failCorrupt: {fileID: 80153087}
+  succDDOS: {fileID: 675132686}
+  failDDOS: {fileID: 1919922294}
+  succZip: {fileID: 2042313994}
+  failZip: {fileID: 992172357}
+  recoveryDDOS: {fileID: 1378039671}
+  ipWarning: {fileID: 716100677}
+  ipSwitch: {fileID: 1832312107}
+  ddosAvailable: {fileID: 206675779}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
