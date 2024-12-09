@@ -27,7 +27,9 @@ public class File : MonoBehaviour
 
     public void SetSelected(bool isSelected) {
         // change sprite to selected
-        GetComponent<Image>().sprite = isSelected ? selected : normal;
+        if(!isCorrupted) {
+            GetComponent<Image>().sprite = isSelected ? selected : normal;
+        }
     }
 
     public void SetCorrupted(bool corrupt) {

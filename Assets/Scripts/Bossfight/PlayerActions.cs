@@ -20,20 +20,6 @@ public class PlayerActions : MonoBehaviour
     public float ddosButtonCooldown;
     public Button ipButton;
     public float ipButtonCooldown;
-    public bool canDDOS;
-
-    public float ddosTimer;
-
-    void Start(){
-        StartCoroutine(DDOSTimer(ddosTimer));
-    }
-
-    void Update(){
-        if (cybersec.isPwned){
-            canDDOS = false;
-            StartCoroutine(DDOSTimer(ddosTimer));
-        }
-    }
 
     // [Header("Alert Boxes")]
     // public static float alertDuration;
@@ -155,6 +141,7 @@ public class PlayerActions : MonoBehaviour
         {
             alert.DisplayAlert(alert.failCorrupt);
             Debug.Log("Corrupt file failed; insufficient permissions");
+            DeselectFile();
         }
 
         //on corrupt File button click, corrupts whatever file is selected
@@ -164,7 +151,7 @@ public class PlayerActions : MonoBehaviour
     }
 
     public void DDOS() {
-        if (canDDOS){
+        if (cybersec.canDDOS){
             cybersec.GetPwned();
             StartCoroutine(ButtonCooldown(ddosButton, ddosButtonCooldown));
             alert.Test();
@@ -196,10 +183,5 @@ public class PlayerActions : MonoBehaviour
     public void Defeat()
     {
         Debug.Log("Lose condition met for player, you lose =(");
-    }
-
-    IEnumerator DDOSTimer(float timer){
-        yield return new WaitForSeconds(timer);
-        canDDOS = true;
     }
 }

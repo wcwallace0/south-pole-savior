@@ -20,12 +20,16 @@ public class Cybersecurity : MonoBehaviour
     public static List<File> corruptedFiles;
     public float ddosInactivityTime;
 
+    public bool canDDOS;
+    public float ddosTimer;
+
     // Start is called before the first frame update
     void Start()
     {
         actionPoints = maxPoints;
         corruptedFiles = new List<File>();
         StartCoroutine(FindIP());
+        StartCoroutine(DDOSTimer(ddosTimer));
     }
 
     void FixedUpdate(){
@@ -52,6 +56,8 @@ public class Cybersecurity : MonoBehaviour
     //action, giving the player time to do more things.
     public void GetPwned(){
         isPwned = true;
+        canDDOS = false;
+        StartCoroutine(DDOSTimer(ddosTimer));
         actionPoints = 0;
         ipProgress= 0;
         StopAllCoroutines();
@@ -116,5 +122,10 @@ public class Cybersecurity : MonoBehaviour
         ipProgress ++;
         isFindIPActive = false;
         Debug.Log("FindIP coroutine ended, ipProgress is " +ipProgress + " out of 4");
+    }
+
+    IEnumerator DDOSTimer(float timer){
+        yield return new WaitForSeconds(timer);
+        canDDOS = true;
     }
 }

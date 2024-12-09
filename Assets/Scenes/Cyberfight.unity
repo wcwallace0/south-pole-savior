@@ -5208,7 +5208,9 @@ MonoBehaviour:
   fixFileTimer: 0
   gameOver: 0
   fileCorrupted: 0
-  ddosInactivityTime: 1e+10
+  ddosInactivityTime: 5
+  canDDOS: 0
+  ddosTimer: 3
 --- !u!4 &2005678843
 Transform:
   m_ObjectHideFlags: 0
@@ -5791,8 +5793,6 @@ MonoBehaviour:
   ddosButtonCooldown: 2
   ipButton: {fileID: 2122324990}
   ipButtonCooldown: 2
-  canDDOS: 0
-  ddosTimer: 2
 --- !u!4 &7330501899880766602
 Transform:
   m_ObjectHideFlags: 0
