@@ -11,6 +11,7 @@ public class Folder : MonoBehaviour
     public int rows = 2;
     public int cols = 3;
     public float spacing;
+    public float padding;
     public RectTransform rectTransform;
     public bool isRoot;
 
@@ -68,7 +69,7 @@ public class Folder : MonoBehaviour
                 if(file != null) {
                     RectTransform fileRect = file.GetComponent<RectTransform>();
                     float step = spacing + fileRect.rect.width;
-                    fileRect.anchoredPosition = new Vector2(j*step, -i*step);
+                    fileRect.anchoredPosition = new Vector2((j*step) + padding, (-i*step) - padding);
                 }
             }
         }

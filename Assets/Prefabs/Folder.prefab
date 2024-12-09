@@ -149,6 +149,7 @@ MonoBehaviour:
   rows: 2
   cols: 3
   spacing: 50
+  padding: 20
   rectTransform: {fileID: 7552651842639160987}
   isRoot: 0
   normalSprite: {fileID: 1497984199, guid: abfe8c50117469d41aef505c4529d691, type: 3}
