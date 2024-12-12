@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     public float xVelocity;
     public GameObject boostIndicator;
     public Animator anim;
+    public GameObject spriteObj;
 
     [Header("Movement Parameters")]
     public float maxVelocity;
@@ -88,6 +89,31 @@ public class PlayerMovement : MonoBehaviour
 
             Movement();
             Ducking();
+            DetermineRotation();
+        }
+    }
+
+
+    // SPRITES
+
+    // Handles the Z-Rotation of the player based on what slope they are on
+    private void DetermineRotation() {
+        float x = rb.velocity.x;
+        float y = rb.velocity.y;
+
+        if(gc.isGrounded) {
+            if(Math.Abs(y) <= 0.001) {
+                // on flat surface
+                spriteObj.transform.rotation = Quaternion.identity;
+            } else if((x<0) == (y<0)) {
+                // on up-right slope
+                spriteObj.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, 25f));
+            } else {
+                // on down-right slope
+                spriteObj.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, -25f));
+            }
+        } else {
+            spriteObj.transform.rotation = Quaternion.identity;
         }
     }
 
