@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
     public BoxCollider2D deathboxSmall;
     public float xVelocity;
     public GameObject boostIndicator;
+    public Animator anim;
 
     [Header("Movement Parameters")]
     public float maxVelocity;
@@ -42,6 +43,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isHoldingRight = false;
     private bool isUpsideDown = false;
     private float gravMultiplier = 1;
+    private bool wasDucking = false;
 
     PlayerControls controls;
 
@@ -105,6 +107,8 @@ public class PlayerMovement : MonoBehaviour
     // Handles jumping when the player presses the jump button
     private void Jump() {
         if(gc.isGrounded) {
+            anim.SetTrigger("Jump");
+            anim.SetBool("Falling", true);
             rb.gravityScale = midairGravScale;
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
         }
@@ -137,9 +141,13 @@ public class PlayerMovement : MonoBehaviour
     private void Ducking() {
         if(isHoldingDown && gc.isGrounded && !isUpsideDown) {
             rb.gravityScale = duckGravScale;
+            wasDucking = true;
 
+            anim.SetBool("Ducking", true);
             ShrinkHitboxes(true);
-        } else {
+        } else if(wasDucking) {
+            wasDucking = false;
+
             // Set gravity scale for when not ducking
             if(gc.isGrounded) {
                 if(rb.velocity.y > 0) {
@@ -151,6 +159,8 @@ public class PlayerMovement : MonoBehaviour
                 rb.gravityScale = midairGravScale;
             }
 
+            anim.SetBool("Ducking", false);
+            anim.ResetTrigger("Boost");
             ShrinkHitboxes(false);
         }
     }
@@ -158,6 +168,7 @@ public class PlayerMovement : MonoBehaviour
     // Handles boosting when the player presses the boost button
     private void Boost() {
         if(canBoost) {
+            anim.SetTrigger("Boost");
             Vector2 boost = new Vector2(boostSpeed, rb.velocity.y);
 
             if(isFacingRight) {
@@ -207,13 +218,18 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void Death() {
+        // animations
+        anim.SetTrigger("Death");
+
+        // Disable player controls
+        controls.Platformer.Disable();
+
         isDead = true;
         rb.gravityScale = 0;
         rb.velocity = Vector2.zero;
         dc.enabled = false;
-        sr.enabled = false;
         isFacingRight = faceRightOnSpawn;
-        sr.flipX = faceRightOnSpawn;
+        sr.flipX = !faceRightOnSpawn;
  
         StartCoroutine(DeathProcess());
     }
@@ -226,7 +242,11 @@ public class PlayerMovement : MonoBehaviour
         dc.enabled = true;
         sr.enabled = true;
 
+        // animations
+        anim.SetTrigger("Respawn");
+
         // Restore player controls
+        controls.Platformer.Enable();
         isDead = false;
     }
 

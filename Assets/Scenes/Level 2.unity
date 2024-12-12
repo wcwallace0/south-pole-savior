@@ -2594,10 +2594,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 7822371619292266608, guid: f3cb0d18a1374294280c7c553b48f276, type: 3}
+      propertyPath: plAnim
+      value: 
+      objectReference: {fileID: 743156502}
     - target: {fileID: 8346265678733256478, guid: f3cb0d18a1374294280c7c553b48f276, type: 3}
       propertyPath: sr
       value: 
       objectReference: {fileID: 743156501}
+    - target: {fileID: 8346265678733256478, guid: f3cb0d18a1374294280c7c553b48f276, type: 3}
+      propertyPath: anim
+      value: 
+      objectReference: {fileID: 743156502}
     - target: {fileID: 8644741361130312896, guid: f3cb0d18a1374294280c7c553b48f276, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
