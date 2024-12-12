@@ -34,11 +34,6 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 respawnPosition;
     public bool faceRightOnSpawn = true; // true - right, false - left
 
-    [Header("Sprites")]
-    public Sprite sliding;
-    public Sprite jumping;
-    public Sprite ducking;
-
     private bool isFacingRight;
     private bool isDead = false;
     private bool canBoost = true;
@@ -79,19 +74,12 @@ public class PlayerMovement : MonoBehaviour
     private void Start() {
         respawnPosition = transform.position;
         isFacingRight = faceRightOnSpawn;
-        sr.flipX = faceRightOnSpawn;
+        sr.flipX = !faceRightOnSpawn;
     }
 
     private void Update() {
         if(!isDead) {
             EnforceMaxVelocity();
-
-            // Set sprites accordingly
-            if(gc.isGrounded) {
-                sr.sprite = sliding;
-            } else {
-                sr.sprite = jumping;
-            }
 
             // for display in inspector
             xVelocity = rb.velocity.x;
@@ -131,11 +119,11 @@ public class PlayerMovement : MonoBehaviour
         if(isHoldingRight && !isFacingRight) {
             // face right
             isFacingRight = true;
-            sr.flipX = true;
+            sr.flipX = false;
         } else if(isHoldingLeft && isFacingRight) {
             // face left
             isFacingRight = false;
-            sr.flipX = false;
+            sr.flipX = true;
         }
         
         if((rb.velocity.x > 0 && isHoldingLeft) || (rb.velocity.x < 0 && isHoldingRight)) {
@@ -149,7 +137,6 @@ public class PlayerMovement : MonoBehaviour
     private void Ducking() {
         if(isHoldingDown && gc.isGrounded && !isUpsideDown) {
             rb.gravityScale = duckGravScale;
-            sr.sprite = ducking;
 
             ShrinkHitboxes(true);
         } else {
