@@ -17,6 +17,8 @@ public class PlayerMovement : MonoBehaviour
     public BoxCollider2D deathboxSmall;
     public float xVelocity;
     public GameObject boostIndicator;
+    public Animator anim;
+    public GameObject spriteObj;
 
     [Header("Movement Parameters")]
     public float maxVelocity;
@@ -34,11 +36,6 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 respawnPosition;
     public bool faceRightOnSpawn = true; // true - right, false - left
 
-    [Header("Sprites")]
-    public Sprite sliding;
-    public Sprite jumping;
-    public Sprite ducking;
-
     private bool isFacingRight;
     private bool isDead = false;
     private bool canBoost = true;
@@ -47,6 +44,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isHoldingRight = false;
     private bool isUpsideDown = false;
     private float gravMultiplier = 1;
+    private bool wasDucking = false;
 
     PlayerControls controls;
 
@@ -79,25 +77,43 @@ public class PlayerMovement : MonoBehaviour
     private void Start() {
         respawnPosition = transform.position;
         isFacingRight = faceRightOnSpawn;
-        sr.flipX = faceRightOnSpawn;
+        sr.flipX = !faceRightOnSpawn;
     }
 
     private void Update() {
         if(!isDead) {
             EnforceMaxVelocity();
 
-            // Set sprites accordingly
-            if(gc.isGrounded) {
-                sr.sprite = sliding;
-            } else {
-                sr.sprite = jumping;
-            }
-
             // for display in inspector
             xVelocity = rb.velocity.x;
 
             Movement();
             Ducking();
+            DetermineRotation();
+        }
+    }
+
+
+    // SPRITES
+
+    // Handles the Z-Rotation of the player based on what slope they are on
+    private void DetermineRotation() {
+        float x = rb.velocity.x;
+        float y = rb.velocity.y;
+
+        if(gc.isGrounded) {
+            if(Math.Abs(y) <= 0.001) {
+                // on flat surface
+                spriteObj.transform.rotation = Quaternion.identity;
+            } else if((x<0) == (y<0)) {
+                // on up-right slope
+                spriteObj.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, 25f));
+            } else {
+                // on down-right slope
+                spriteObj.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, -25f));
+            }
+        } else {
+            spriteObj.transform.rotation = Quaternion.identity;
         }
     }
 
@@ -117,6 +133,8 @@ public class PlayerMovement : MonoBehaviour
     // Handles jumping when the player presses the jump button
     private void Jump() {
         if(gc.isGrounded) {
+            anim.SetTrigger("Jump");
+            anim.SetBool("Falling", true);
             rb.gravityScale = midairGravScale;
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
         }
@@ -131,11 +149,11 @@ public class PlayerMovement : MonoBehaviour
         if(isHoldingRight && !isFacingRight) {
             // face right
             isFacingRight = true;
-            sr.flipX = true;
+            sr.flipX = false;
         } else if(isHoldingLeft && isFacingRight) {
             // face left
             isFacingRight = false;
-            sr.flipX = false;
+            sr.flipX = true;
         }
         
         if((rb.velocity.x > 0 && isHoldingLeft) || (rb.velocity.x < 0 && isHoldingRight)) {
@@ -149,10 +167,13 @@ public class PlayerMovement : MonoBehaviour
     private void Ducking() {
         if(isHoldingDown && gc.isGrounded && !isUpsideDown) {
             rb.gravityScale = duckGravScale;
-            sr.sprite = ducking;
+            wasDucking = true;
 
+            anim.SetBool("Ducking", true);
             ShrinkHitboxes(true);
-        } else {
+        } else if(wasDucking) {
+            wasDucking = false;
+
             // Set gravity scale for when not ducking
             if(gc.isGrounded) {
                 if(rb.velocity.y > 0) {
@@ -164,6 +185,8 @@ public class PlayerMovement : MonoBehaviour
                 rb.gravityScale = midairGravScale;
             }
 
+            anim.SetBool("Ducking", false);
+            anim.ResetTrigger("Boost");
             ShrinkHitboxes(false);
         }
     }
@@ -171,6 +194,7 @@ public class PlayerMovement : MonoBehaviour
     // Handles boosting when the player presses the boost button
     private void Boost() {
         if(canBoost) {
+            anim.SetTrigger("Boost");
             Vector2 boost = new Vector2(boostSpeed, rb.velocity.y);
 
             if(isFacingRight) {
@@ -220,13 +244,18 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void Death() {
+        // animations
+        anim.SetTrigger("Death");
+
+        // Disable player controls
+        controls.Platformer.Disable();
+
         isDead = true;
         rb.gravityScale = 0;
         rb.velocity = Vector2.zero;
         dc.enabled = false;
-        sr.enabled = false;
         isFacingRight = faceRightOnSpawn;
-        sr.flipX = faceRightOnSpawn;
+        sr.flipX = !faceRightOnSpawn;
  
         StartCoroutine(DeathProcess());
     }
@@ -239,7 +268,11 @@ public class PlayerMovement : MonoBehaviour
         dc.enabled = true;
         sr.enabled = true;
 
+        // animations
+        anim.SetTrigger("Respawn");
+
         // Restore player controls
+        controls.Platformer.Enable();
         isDead = false;
     }
 
