@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
     public GameObject boostIndicator;
     public Animator anim;
     public GameObject spriteObj;
+    public GameObject tutorialMessages;
 
     [Header("Movement Parameters")]
     public float maxVelocity;
@@ -114,6 +115,13 @@ public class PlayerMovement : MonoBehaviour
             }
         } else {
             spriteObj.transform.rotation = Quaternion.identity;
+        }
+    }
+
+    // Makes tutorial messages visible or invisible (used on death)
+    void SetTutorialMessages(bool isActive) {
+        if(SceneManager.GetActiveScene().name == "TutorialLevel") {
+            tutorialMessages.SetActive(isActive);
         }
     }
 
@@ -247,6 +255,9 @@ public class PlayerMovement : MonoBehaviour
         // animations
         anim.SetTrigger("Death");
 
+        // show hint messages
+        SetTutorialMessages(true);
+
         // Disable player controls
         controls.Platformer.Disable();
 
@@ -270,6 +281,9 @@ public class PlayerMovement : MonoBehaviour
 
         // animations
         anim.SetTrigger("Respawn");
+
+        // hide hint messages
+        SetTutorialMessages(false);
 
         // Restore player controls
         controls.Platformer.Enable();

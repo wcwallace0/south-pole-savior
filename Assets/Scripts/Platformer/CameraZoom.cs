@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -25,7 +26,7 @@ public class CameraZoom : MonoBehaviour
     }
 
     private void SetZoom() {
-        float vel = pm.rb.velocity.x;
+        float vel = Math.Abs(pm.rb.velocity.x);
         float newZoom;
         if(vel < zoomThreshold) {
             newZoom = minZoom;
