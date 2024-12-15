@@ -155,6 +155,7 @@ public class PlayerMovement : MonoBehaviour
             anim.SetTrigger("Jump");
             anim.SetBool("Falling", true);
             rb.gravityScale = midairGravScale;
+            gc.jumped = true;
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
         }
     }
@@ -194,7 +195,7 @@ public class PlayerMovement : MonoBehaviour
             wasDucking = false;
 
             // Set gravity scale for when not ducking
-            if(gc.isGrounded) {
+            if(gc.isGrounded && !gc.jumped) {
                 if(rb.velocity.y > 0) {
                     rb.gravityScale = slopeAccelUp;
                 } else {
