@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -46,6 +46,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isUpsideDown = false;
     private float gravMultiplier = 1;
     private bool wasDucking = false;
+    private Image boostFill;
 
     PlayerControls controls;
 
@@ -79,6 +80,9 @@ public class PlayerMovement : MonoBehaviour
         respawnPosition = transform.position;
         isFacingRight = faceRightOnSpawn;
         sr.flipX = !faceRightOnSpawn;
+
+        boostFill = boostIndicator.GetComponentsInChildren<Image>()[1];
+        Debug.Log(boostFill);
     }
 
     private void Update() {
@@ -91,6 +95,7 @@ public class PlayerMovement : MonoBehaviour
             Movement();
             Ducking();
             DetermineRotation();
+            SetBoostFill();
         }
     }
 
@@ -122,6 +127,13 @@ public class PlayerMovement : MonoBehaviour
     void SetTutorialMessages(bool isActive) {
         if(SceneManager.GetActiveScene().name == "TutorialLevel") {
             tutorialMessages.SetActive(isActive);
+        }
+    }
+
+    // Sets the fill of the boost cooldown according to progress
+    void SetBoostFill() {
+        if(!canBoost) {
+            boostFill.fillAmount += Time.deltaTime / boostCooldown;
         }
     }
 
@@ -220,6 +232,7 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = boost;
 
             canBoost = false;
+            boostFill.fillAmount = 0;
             boostIndicator.SetActive(true);
             StartCoroutine(BoostCooldown());
         }
