@@ -82,7 +82,6 @@ public class PlayerMovement : MonoBehaviour
         sr.flipX = !faceRightOnSpawn;
 
         boostFill = boostIndicator.GetComponentsInChildren<Image>()[1];
-        Debug.Log(boostFill);
     }
 
     private void Update() {
