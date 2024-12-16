@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 using UnityEditor.AssetImporters;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,9 +24,14 @@ public class Folder : MonoBehaviour
     public bool isBombable;
     public bool isBombed;
     public GameObject[] fileDependencies;
+    public LabelManager lm;
 
 
     private void Start() {
+        // lm = FindObjectOfType<LabelManager>();
+        // if (gameObject.GetComponent<Image>().enabled){
+        //     lm.AddObject(gameObject);
+        // }
         GetComponent<Image>().sprite = normalSprite;
         grid = new GameObject[rows,cols];
 
@@ -96,13 +102,11 @@ public class Folder : MonoBehaviour
         if(isBombable) {
             gameObject.GetComponent<Image>().sprite = corruptedSprite;
             gameObject.GetComponent<Button>().enabled = false;
+            this.name = "CORRUPTED";
             isBombed = true;
         }
     }
 
-    // TODO
-    // because File needs this as well, consider making a superclass
-    // that encapsulates Folder and File, so they can share this functionality?
     public void UpdateIsBombable() {
         Debug.Log("UpdateIsBombable called");
         bool newValue = true;

@@ -21,6 +21,11 @@ public class PlayerActions : MonoBehaviour
     public Button ipButton;
     public float ipButtonCooldown;
 
+    public LabelManager lm;
+
+    public int rows = 2;
+    public int cols = 3;
+
     // [Header("Alert Boxes")]
     // public static float alertDuration;
     // public static bool isAlert;
@@ -57,12 +62,17 @@ public class PlayerActions : MonoBehaviour
     //     ddosAvailable = GameObject.Find("Text_DDOSAvailable");
 
     // }
-
+    void Start()
+    {
+        lm = FindObjectOfType<LabelManager>();
+    }
+    
     public void NavigateFolder(Folder newFolder) {
         DeselectFile();
         newFolder.Navigate(currentFolder);
         currentFolder = newFolder;
         isAtRoot = false;
+        lm.RefreshLabels();
     }
 
     public void NavigateBack() {
@@ -76,6 +86,7 @@ public class PlayerActions : MonoBehaviour
                 isAtRoot = true;
             }
         }
+        lm.RefreshLabels();
     }
 
     public void SelectFile(File fl) {
@@ -105,20 +116,20 @@ public class PlayerActions : MonoBehaviour
                 NavigateBack();
                 StartCoroutine(ButtonCooldown(zipButton, zipButtonCooldown));
                 alert.DisplayAlert(alert.succZip);
-                Debug.Log("ZIP Bomb success, folder corrupted.");
+                //Debug.Log("ZIP Bomb success, folder corrupted.");
                 //corrupt all files in the folder
             //}
         } else
         {
             alert.DisplayAlert(alert.failZip);
-            Debug.Log("ZIP Bomb failed; insufficient file upload permissions");
+            //Debug.Log("ZIP Bomb failed; insufficient file upload permissions");
         }
 
         //on ZIP Bomb button click, instantly corrupts whatever folder
         //the player is currently in if certain prereqs are met, otherwise
         //it will fail and player will lose health. a successful use of the zip bomb
         //button in the top level folder will be a win condition for the player.
-
+        lm.RefreshLabels();
     }
 
     public void CorruptFile()
@@ -131,8 +142,7 @@ public class PlayerActions : MonoBehaviour
             DeselectFile();
             StartCoroutine(ButtonCooldown(corruptButton, corruptButtonCooldown));
             alert.DisplayAlert(alert.succCorrupt);
-            alert.Test();
-            Debug.Log("Corrupt file success");
+            //Debug.Log("Corrupt file success");
             // iterate through all folders,
             // call folder.UpdateIsBombable()
             // if isBombable is true after, display message
@@ -140,10 +150,10 @@ public class PlayerActions : MonoBehaviour
         else
         {
             alert.DisplayAlert(alert.failCorrupt);
-            Debug.Log("Corrupt file failed; insufficient permissions");
+            //Debug.Log("Corrupt file failed; insufficient permissions");
             DeselectFile();
         }
-
+        lm.RefreshLabels();
         //on corrupt File button click, corrupts whatever file is selected
         //unless player has insufficient permissions, in which case the player
         //will lose health. This will partially preoccupy the opponent (cybersec team)
@@ -154,9 +164,7 @@ public class PlayerActions : MonoBehaviour
         if (cybersec.canDDOS){
             cybersec.GetPwned();
             StartCoroutine(ButtonCooldown(ddosButton, ddosButtonCooldown));
-            alert.Test();
             alert.DisplayAlert(alert.succDDOS);
-            alert.Test();
         } else{
             alert.DisplayAlert(alert.failDDOS);
         }
@@ -170,7 +178,6 @@ public class PlayerActions : MonoBehaviour
     {
         cybersec.ipProgress = 0;
         StartCoroutine(ButtonCooldown(ipButton, ipButtonCooldown));
-        alert.Test();
         alert.DisplayAlert(alert.ipSwitch);
     }
 

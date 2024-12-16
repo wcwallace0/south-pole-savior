@@ -21,7 +21,7 @@ public class Alert : MonoBehaviour
     // Start is called before the first frame update
     
     public void DisplayAlert(GameObject alert) {
-        Debug.Log("DisplayAlert called");
+        //Debug.Log("DisplayAlert called");
         if(isAlert){
             activeAlert.SetActive(false);
         }
@@ -30,7 +30,7 @@ public class Alert : MonoBehaviour
         StartCoroutine(AlertCooldown(alert));
     }
     IEnumerator AlertCooldown(GameObject alert) {
-        Debug.Log("AlertCooldown called");
+        //Debug.Log("AlertCooldown called");
         alert.SetActive(true);
         yield return new WaitForSeconds(alertDuration);
         alert.SetActive(false);
@@ -39,6 +39,6 @@ public class Alert : MonoBehaviour
     }
 
     public void Test() {
-        Debug.Log("Test function in Alert class called");
+        //Debug.Log("Test function in Alert class called");
     }
 }

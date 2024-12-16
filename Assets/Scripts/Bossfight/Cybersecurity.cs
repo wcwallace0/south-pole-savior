@@ -116,12 +116,12 @@ public class Cybersecurity : MonoBehaviour
 
     IEnumerator FindIP()
     {
-        Debug.Log("FindIP coroutine started");
+        //Debug.Log("FindIP coroutine started");
         isFindIPActive = true;
         yield return new WaitForSeconds(ipTimer);
         ipProgress ++;
         isFindIPActive = false;
-        Debug.Log("FindIP coroutine ended, ipProgress is " +ipProgress + " out of 4");
+        //Debug.Log("FindIP coroutine ended, ipProgress is " +ipProgress + " out of 4");
     }
 
     IEnumerator DDOSTimer(float timer){

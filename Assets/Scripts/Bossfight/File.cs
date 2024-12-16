@@ -21,7 +21,13 @@ public class File : MonoBehaviour
 
     public GameObject[] dependents;
 
+    public LabelManager lm;
+
     void Start(){
+        lm = FindObjectOfType<LabelManager>();
+        if (gameObject.GetComponent<Image>().enabled){
+            lm.AddObject(gameObject);
+        }
         GetComponent<Image>().sprite = normal;
     }
 
@@ -35,9 +41,9 @@ public class File : MonoBehaviour
     public void SetCorrupted(bool corrupt) {
         
         GetComponent<Button>().enabled = !corrupt;
-        Debug.Log("boolean status in SetCorrupted: " + corrupt);
+        //Debug.Log("boolean status in SetCorrupted: " + corrupt);
         isCorrupted = corrupt;
-        Debug.Log("boolean status in SetCorrupted: " + corrupt);
+        //Debug.Log("boolean status in SetCorrupted: " + corrupt);
 
 
         //TODO: This line (line 45) is not working and I (Colin) haven't been able to figure out why (hence the debug logs and test string).
@@ -49,7 +55,7 @@ public class File : MonoBehaviour
 
 
         String test = corrupt ? "corrupted" : "normal";
-        Debug.Log("File sprite: " + test);
+        //Debug.Log("File sprite: " + test);
 
         if(corrupt) {
             Cybersecurity.corruptedFiles.Add(this);
@@ -68,7 +74,7 @@ public class File : MonoBehaviour
 
 
     public void UpdateIsVulnerable() {
-        Debug.Log("UpdateIsVulnerable called");
+        //Debug.Log("UpdateIsVulnerable called");
         bool newValue = true;
         foreach(GameObject file in fileDependencies) {
             File fl = file.GetComponent<File>();
