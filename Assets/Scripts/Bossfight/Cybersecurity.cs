@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class Cybersecurity : MonoBehaviour
 {
+    public Alert alert;
     public bool isPwned = false; //boolean indicating whether the enemy is currently DDOSed
     public int actionPoints;
     public int maxPoints = 4;
@@ -19,12 +20,16 @@ public class Cybersecurity : MonoBehaviour
     public static List<File> corruptedFiles;
     public float ddosInactivityTime;
 
+    public bool canDDOS;
+    public float ddosTimer;
+
     // Start is called before the first frame update
     void Start()
     {
         actionPoints = maxPoints;
         corruptedFiles = new List<File>();
         StartCoroutine(FindIP());
+        StartCoroutine(DDOSTimer(ddosTimer));
     }
 
     void FixedUpdate(){
@@ -39,6 +44,10 @@ public class Cybersecurity : MonoBehaviour
                 StartCoroutine(FindIP());
             }
         }
+
+        if (ipProgress == (maxPoints - 1)){
+            alert.DisplayAlert(alert.ipWarning);
+        }
     }
 
     //on DDOS button click, this is essentially an ultimate ability for the player
@@ -47,6 +56,8 @@ public class Cybersecurity : MonoBehaviour
     //action, giving the player time to do more things.
     public void GetPwned(){
         isPwned = true;
+        canDDOS = false;
+        StartCoroutine(DDOSTimer(ddosTimer));
         actionPoints = 0;
         ipProgress= 0;
         StopAllCoroutines();
@@ -57,6 +68,7 @@ public class Cybersecurity : MonoBehaviour
         isPwned = false;
         actionPoints = maxPoints;
         StartCoroutine(FindIP());
+        alert.DisplayAlert(alert.recoveryDDOS);
     }
 
     IEnumerator DisableCybersec() {
@@ -97,6 +109,7 @@ public class Cybersecurity : MonoBehaviour
             yield return new WaitForSeconds(fixFileTimer);
             actionPoints ++;
             fl.SetCorrupted(false);
+            alert.DisplayAlert(alert.fileRestored);
         }
 
     }
@@ -109,5 +122,10 @@ public class Cybersecurity : MonoBehaviour
         ipProgress ++;
         isFindIPActive = false;
         Debug.Log("FindIP coroutine ended, ipProgress is " +ipProgress + " out of 4");
+    }
+
+    IEnumerator DDOSTimer(float timer){
+        yield return new WaitForSeconds(timer);
+        canDDOS = true;
     }
 }

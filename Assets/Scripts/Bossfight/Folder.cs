@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.AssetImporters;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +11,7 @@ public class Folder : MonoBehaviour
     public int rows = 2;
     public int cols = 3;
     public float spacing;
+    public float padding;
     public RectTransform rectTransform;
     public bool isRoot;
 
@@ -22,7 +24,9 @@ public class Folder : MonoBehaviour
     public bool isBombed;
     public GameObject[] fileDependencies;
 
+
     private void Start() {
+        GetComponent<Image>().sprite = normalSprite;
         grid = new GameObject[rows,cols];
 
         // Fill the grid with the children of this gameobject
@@ -65,7 +69,7 @@ public class Folder : MonoBehaviour
                 if(file != null) {
                     RectTransform fileRect = file.GetComponent<RectTransform>();
                     float step = spacing + fileRect.rect.width;
-                    fileRect.anchoredPosition = new Vector2(j*step, -i*step);
+                    fileRect.anchoredPosition = new Vector2((j*step) + padding, (-i*step) - padding);
                 }
             }
         }
@@ -100,6 +104,7 @@ public class Folder : MonoBehaviour
     // because File needs this as well, consider making a superclass
     // that encapsulates Folder and File, so they can share this functionality?
     public void UpdateIsBombable() {
+        Debug.Log("UpdateIsBombable called");
         bool newValue = true;
         foreach(GameObject file in fileDependencies) {
             File fl = file.GetComponent<File>();
