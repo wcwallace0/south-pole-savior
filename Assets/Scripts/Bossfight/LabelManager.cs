@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEditor.Search;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -22,6 +23,11 @@ public class LabelManager : MonoBehaviour
     public Canvas canvas;
     public float spacing;
     public float padding;
+    public Font font;
+
+    public int rows;
+    public int cols;
+    public GameObject[,] grid;
 
     void Start()
     {
@@ -61,9 +67,9 @@ public class LabelManager : MonoBehaviour
 
         rectTrans.localScale = targTrans.localScale;
         rectTrans.SetParent(canvas.transform, false);
-        rectTrans.anchorMin = targTrans.anchorMin; //new Vector2(0,1);
+        rectTrans.anchorMin = targTrans.anchorMin; 
         rectTrans.anchorMax = targTrans.anchorMax;
-        rectTrans.pivot = targTrans.pivot; //new Vector2(0,1);
+        rectTrans.pivot = targTrans.pivot; 
 
         //rectTrans.anchoredPosition = targTrans.anchoredPosition + offset;
         float targX = targTrans.position.x;
@@ -75,7 +81,6 @@ public class LabelManager : MonoBehaviour
 
         float tranX = targX + offsX;
         float tranY = targY + offsY;
-        Debug.Log("Label X: " + tranX + " Label Y: " + tranY);
 
         Vector2 pos = new Vector2(tranX, tranY);
 
@@ -88,12 +93,21 @@ public class LabelManager : MonoBehaviour
         label = textObj.AddComponent<Text>();
 
         label.alignment = TextAnchor.UpperLeft;
-        label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        label.font = font;//Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         label.text = target.name;
-        label.fontSize = 16;
+        label.fontSize = 12;
         label.color = Color.white;
         textObj.AddComponent<UnityEngine.UI.Button>();
         textObj.GetComponent<UnityEngine.UI.Button>().interactable = false;
+
+        ContentSizeFitter fitter = label.GetComponent<ContentSizeFitter>();
+        if (fitter == null)
+        {
+            fitter = label.gameObject.AddComponent<ContentSizeFitter>();
+        }
+        fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+        fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        rectTrans.sizeDelta = new Vector2(rectTrans.sizeDelta.x, rectTrans.sizeDelta.y);
 
         labels.Add(label);
     }
@@ -132,6 +146,20 @@ public class LabelManager : MonoBehaviour
         }
 
     }
+
+    private void PositionLabels() {
+        for(int i = 0; i<rows; i++) {
+            for(int j = 0; j<cols; j++) {
+                GameObject file = grid[i,j];
+                if(file != null) {
+                    RectTransform fileRect = file.GetComponent<RectTransform>();
+                    float step = spacing + fileRect.rect.width;
+                    fileRect.anchoredPosition = new Vector2((j*step) + padding, (-i*step) - padding);
+                }
+            }
+        }
+    }
+
     IEnumerator Buffer()
     {
         yield return new WaitForSeconds(1.0f);

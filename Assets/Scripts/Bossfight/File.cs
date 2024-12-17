@@ -24,7 +24,7 @@ public class File : MonoBehaviour
     public LabelManager lm;
 
     void Start(){
-        // lm = FindObjectOfType<LabelManager>();
+        lm = FindObjectOfType<LabelManager>();
         // if (gameObject.GetComponent<Image>().enabled){
         //     lm.AddObject(gameObject);
         // }
