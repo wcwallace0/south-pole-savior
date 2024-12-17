@@ -18,7 +18,9 @@ public class Alert : MonoBehaviour
     public GameObject ipWarning;
     public GameObject ipSwitch;
     public GameObject ddosAvailable;
-    // Start is called before the first frame update
+    public GameObject ipNerf;
+    public GameObject niceTry;
+    public GameObject DDOSbuff;
     
     public void DisplayAlert(GameObject alert) {
         //Debug.Log("DisplayAlert called");
@@ -30,7 +32,6 @@ public class Alert : MonoBehaviour
         StartCoroutine(AlertCooldown(alert));
     }
     IEnumerator AlertCooldown(GameObject alert) {
-        //Debug.Log("AlertCooldown called");
         alert.SetActive(true);
         yield return new WaitForSeconds(alertDuration);
         alert.SetActive(false);
