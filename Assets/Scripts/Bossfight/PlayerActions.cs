@@ -101,23 +101,28 @@ public class PlayerActions : MonoBehaviour
 
     public void CorruptFile()
     {
+        if(selectedFile.name == "System32") { 
+            alert.DisplayAlert(alert.niceTry);
+            selectedFile.isVulnerable = false;
+        }
         if (selectedFile.isVulnerable)
         {
             selectedFile.SetCorrupted(true);
             cybersec.fixFile(selectedFile);
             if (selectedFile.parent != null) selectedFile.parent.UpdateIsBombable();
-            if(selectedFile.name == "CLASSIFIED.exe"){
-                alert.DisplayAlert(alert.DDOSbuff);
-                ddosButtonCooldown --;
-                cybersec.ddosTimer += 2;
-            } else { alert.DisplayAlert(alert.succCorrupt); }
+            // if(selectedFile.name == "CLASSIFIED.exe"){
+            //     alert.DisplayAlert(alert.DDOSbuff);
+            //     ddosButtonCooldown --;
+            //     cybersec.ddosTimer -= 2;
+            // } else { 
+            alert.DisplayAlert(alert.succCorrupt); 
+            //}
             DeselectFile();
             StartCoroutine(ButtonCooldown(corruptButton, corruptButtonCooldown));
         } 
         else
         {
-            if(selectedFile.name == "System32") { alert.DisplayAlert(alert.niceTry); } else {
-            alert.DisplayAlert(alert.failCorrupt); }
+            alert.DisplayAlert(alert.failCorrupt);
             DeselectFile();
         }
         lm.RefreshLabels();
@@ -126,7 +131,7 @@ public class PlayerActions : MonoBehaviour
     public void DDOS() {
         if (cybersec.canDDOS){
             cybersec.GetPwned();
-            StartCoroutine(ButtonCooldown(ddosButton, ddosButtonCooldown));
+            //StartCoroutine(ButtonCooldown(ddosButton, ddosButtonCooldown));
             alert.DisplayAlert(alert.succDDOS);
         } else{
             alert.DisplayAlert(alert.failDDOS);

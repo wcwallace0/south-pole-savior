@@ -11,6 +11,7 @@ public class File : MonoBehaviour
     public string fileName;
     public bool isVulnerable = false;
     public bool isCorrupted = false;
+    public bool isInBombed = false;
 
     public Sprite normal;
     public Sprite selected;

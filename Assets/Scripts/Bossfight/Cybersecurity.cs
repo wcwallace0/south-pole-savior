@@ -23,6 +23,7 @@ public class Cybersecurity : MonoBehaviour
 
     public bool canDDOS;
     public float ddosTimer;
+    public bool endgame = false;
 
     // Start is called before the first frame update
     void Start()
@@ -56,12 +57,12 @@ public class Cybersecurity : MonoBehaviour
     //need to figure out. If successful, the DDOS attack will disable the opponent from taking any
     //action, giving the player time to do more things.
     public void GetPwned(){
+        StopAllCoroutines();
         isPwned = true;
         canDDOS = false;
         StartCoroutine(DDOSTimer(ddosTimer));
         actionPoints = 0;
         ipProgress= 0;
-        StopAllCoroutines();
         StartCoroutine(DisableCybersec());
     }
 
@@ -78,7 +79,12 @@ public class Cybersecurity : MonoBehaviour
     }
 
     public void fixFile(File file){
-        StartCoroutine(FixFl(file));
+        if (!file.isInBombed){
+            StartCoroutine(FixFl(file));
+        } else {
+            file.isCorrupted = true;
+            corruptedFiles.Remove(file);
+        }
     }
 
     public void incrementAcionPts()
@@ -97,6 +103,14 @@ public class Cybersecurity : MonoBehaviour
 
     private File FindCorruptedFile() {
         if(corruptedFiles.Any()) {
+            if(endgame){
+                foreach(File f in corruptedFiles){
+                    if(f.name == "CLASSIFIED.exe") return f;
+                    if(f.name == "SecModule") return f;
+                    if(f.name == "SysManager") return f;
+                }
+            }
+
             return corruptedFiles[0];
         } else {
             return null;
@@ -107,9 +121,20 @@ public class Cybersecurity : MonoBehaviour
     {
         if (actionPoints > 0) {
             actionPoints --;
+            
+            if(!endgame){
+                int ct = 0;
+                foreach(File f in corruptedFiles) { ct ++; }
+                fixFileTimer = ct;
+            }
+            
             yield return new WaitForSeconds(fixFileTimer);
+
             actionPoints ++;
-            fl.SetCorrupted(false);
+            if(fixFileTimer > 2) {fixFileTimer --;}
+            if(fl.isInBombed){fl.SetCorrupted(true);} else{
+                fl.SetCorrupted(false);
+            }
             alert.DisplayAlert(alert.fileRestored);
         }
 
@@ -126,8 +151,10 @@ public class Cybersecurity : MonoBehaviour
     }
 
     IEnumerator DDOSTimer(float timer){
+        Debug.Log("DDOSTimer activated");
         yield return new WaitForSeconds(timer);
         canDDOS = true;
+        Debug.Log("DDOSTimer done");
     }
     public void KillCoroutines()
     {
