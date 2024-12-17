@@ -22,6 +22,7 @@ public class GroundCheck : MonoBehaviour
         if(other.gameObject.CompareTag("Slope")) {
             isGrounded = false;
             plAnim.SetBool("Falling", true);
+            pm.UpdateGravityScale();
         }
     }
 }
