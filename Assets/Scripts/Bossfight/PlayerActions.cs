@@ -3,31 +3,42 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerActions : MonoBehaviour
 {
+    public LoadGame loader;
     public Folder currentFolder;
+    public Alert alert;
     public int playerHealth;
     public Cybersecurity cybersec;
 
     [Header("Buttons")]
     public Button zipButton;
     public float zipButtonCooldown;
-    public Button deleteButton;
-    public float deleteButtonCooldown;
+    public Button corruptButton;
+    public float corruptButtonCooldown;
     public Button ddosButton;
     public float ddosButtonCooldown;
     public Button ipButton;
     public float ipButtonCooldown;
+    public LabelManager lm;
+
 
     private bool isAtRoot = true;
     private File selectedFile;
 
+    void Start()
+    {
+        lm = FindObjectOfType<LabelManager>();
+    }
+    
     public void NavigateFolder(Folder newFolder) {
         DeselectFile();
         newFolder.Navigate(currentFolder);
         currentFolder = newFolder;
         isAtRoot = false;
+        lm.RefreshLabels();
     }
 
     public void NavigateBack() {
@@ -41,19 +52,20 @@ public class PlayerActions : MonoBehaviour
                 isAtRoot = true;
             }
         }
+        lm.RefreshLabels();
     }
 
     public void SelectFile(File fl) {
         selectedFile = fl;
         selectedFile.SetSelected(true);
-        deleteButton.interactable = true;
+        corruptButton.interactable = true;
     }
 
     public void DeselectFile() {
         if(selectedFile != null) {
             selectedFile.SetSelected(false);
             selectedFile = null;
-            deleteButton.interactable = false;
+            corruptButton.interactable = false;
         }
     }
 
@@ -69,48 +81,59 @@ public class PlayerActions : MonoBehaviour
                 currentFolder.Corrupt();
                 NavigateBack();
                 StartCoroutine(ButtonCooldown(zipButton, zipButtonCooldown));
-                Debug.Log("ZIP Bomb success, folder corrupted.");
+                alert.DisplayAlert(alert.succZip);
+                //Debug.Log("ZIP Bomb success, folder corrupted.");
                 //corrupt all files in the folder
             //}
         } else
         {
-            Debug.Log("ZIP Bomb failed; insufficient file upload permissions");
+            alert.DisplayAlert(alert.failZip);
+            //Debug.Log("ZIP Bomb failed; insufficient file upload permissions");
         }
 
         //on ZIP Bomb button click, instantly corrupts whatever folder
         //the player is currently in if certain prereqs are met, otherwise
         //it will fail and player will lose health. a successful use of the zip bomb
         //button in the top level folder will be a win condition for the player.
-
+        lm.RefreshLabels();
     }
 
-    public void DeleteFile()
-    {      
+    public void CorruptFile()
+    {
         if (selectedFile.isVulnerable)
         {
             selectedFile.SetCorrupted(true);
             cybersec.fixFile(selectedFile);
+            if (selectedFile.parent != null) selectedFile.parent.UpdateIsBombable();
             DeselectFile();
-            StartCoroutine(ButtonCooldown(deleteButton, deleteButtonCooldown));
-
+            StartCoroutine(ButtonCooldown(corruptButton, corruptButtonCooldown));
+            alert.DisplayAlert(alert.succCorrupt);
+            //Debug.Log("Corrupt file success");
             // iterate through all folders,
             // call folder.UpdateIsBombable()
             // if isBombable is true after, display message
         } 
         else
         {
-            Debug.Log("Delete file failed; insufficient permissions");
+            alert.DisplayAlert(alert.failCorrupt);
+            //Debug.Log("Corrupt file failed; insufficient permissions");
+            DeselectFile();
         }
-
-        //on Delete File button click, deletes whatever file is selected
+        lm.RefreshLabels();
+        //on corrupt File button click, corrupts whatever file is selected
         //unless player has insufficient permissions, in which case the player
         //will lose health. This will partially preoccupy the opponent (cybersec team)
         //as they attempt to restore the file, which will give the player more time to do other things
     }
 
     public void DDOS() {
-        cybersec.GetPwned();
-        StartCoroutine(ButtonCooldown(ddosButton, ddosButtonCooldown));
+        if (cybersec.canDDOS){
+            cybersec.GetPwned();
+            StartCoroutine(ButtonCooldown(ddosButton, ddosButtonCooldown));
+            alert.DisplayAlert(alert.succDDOS);
+        } else{
+            alert.DisplayAlert(alert.failDDOS);
+        }
     }
 
     //on IP switch button click, this is a defensive move for the player. there might be a constant
@@ -121,6 +144,7 @@ public class PlayerActions : MonoBehaviour
     {
         cybersec.ipProgress = 0;
         StartCoroutine(ButtonCooldown(ipButton, ipButtonCooldown));
+        alert.DisplayAlert(alert.ipSwitch);
     }
 
     IEnumerator ButtonCooldown(Button button, float cooldown) {
@@ -131,6 +155,11 @@ public class PlayerActions : MonoBehaviour
 
     public void Defeat()
     {
-        Debug.Log("Lose condition met for player, you lose =(");
+        loader.EndGame(false);
+    }
+
+    public void KillCoroutines()
+    {
+        StopAllCoroutines();
     }
 }

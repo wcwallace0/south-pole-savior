@@ -6,10 +6,12 @@ using UnityEngine.UI;
 
 public class Cybersecurity : MonoBehaviour
 {
+    public Alert alert;
     public bool isPwned = false; //boolean indicating whether the enemy is currently DDOSed
     public int actionPoints;
-    public int maxPoints = 4;
+    public int maxPoints;
     public int ipProgress; //scale is 0-4. 0 means no progress towards finding players IP, 4 means IP has been found.
+    public int ipGoal;
     public PlayerActions player;
     public bool isFindIPActive = true;
     public float ipTimer;
@@ -19,16 +21,20 @@ public class Cybersecurity : MonoBehaviour
     public static List<File> corruptedFiles;
     public float ddosInactivityTime;
 
+    public bool canDDOS;
+    public float ddosTimer;
+
     // Start is called before the first frame update
     void Start()
     {
         actionPoints = maxPoints;
         corruptedFiles = new List<File>();
         StartCoroutine(FindIP());
+        StartCoroutine(DDOSTimer(ddosTimer));
     }
 
     void FixedUpdate(){
-        if (ipProgress == maxPoints && !gameOver){
+        if (ipProgress == ipGoal && !gameOver){
             player.Defeat();
             gameOver = true;
 
@@ -39,6 +45,10 @@ public class Cybersecurity : MonoBehaviour
                 StartCoroutine(FindIP());
             }
         }
+
+        if (ipProgress == (ipGoal - 1)){
+            alert.DisplayAlert(alert.ipWarning);
+        }
     }
 
     //on DDOS button click, this is essentially an ultimate ability for the player
@@ -47,6 +57,8 @@ public class Cybersecurity : MonoBehaviour
     //action, giving the player time to do more things.
     public void GetPwned(){
         isPwned = true;
+        canDDOS = false;
+        StartCoroutine(DDOSTimer(ddosTimer));
         actionPoints = 0;
         ipProgress= 0;
         StopAllCoroutines();
@@ -57,6 +69,7 @@ public class Cybersecurity : MonoBehaviour
         isPwned = false;
         actionPoints = maxPoints;
         StartCoroutine(FindIP());
+        alert.DisplayAlert(alert.recoveryDDOS);
     }
 
     IEnumerator DisableCybersec() {
@@ -97,17 +110,27 @@ public class Cybersecurity : MonoBehaviour
             yield return new WaitForSeconds(fixFileTimer);
             actionPoints ++;
             fl.SetCorrupted(false);
+            alert.DisplayAlert(alert.fileRestored);
         }
 
     }
 
     IEnumerator FindIP()
     {
-        Debug.Log("FindIP coroutine started");
+        //Debug.Log("FindIP coroutine started");
         isFindIPActive = true;
         yield return new WaitForSeconds(ipTimer);
         ipProgress ++;
         isFindIPActive = false;
-        Debug.Log("FindIP coroutine ended, ipProgress is " +ipProgress + " out of 4");
+        //Debug.Log("FindIP coroutine ended, ipProgress is " +ipProgress + " out of 4");
+    }
+
+    IEnumerator DDOSTimer(float timer){
+        yield return new WaitForSeconds(timer);
+        canDDOS = true;
+    }
+    public void KillCoroutines()
+    {
+        StopAllCoroutines();
     }
 }
