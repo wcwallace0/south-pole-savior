@@ -38,7 +38,8 @@ public class Alert : MonoBehaviour
         activeAlert = null;
     }
 
-    public void Test() {
-        //Debug.Log("Test function in Alert class called");
+    public void KillCoroutines()
+    {
+        StopAllCoroutines();
     }
 }

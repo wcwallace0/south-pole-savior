@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerActions : MonoBehaviour
 {
+    public LoadGame loader;
     public Folder currentFolder;
     public Alert alert;
     public int playerHealth;
@@ -23,42 +25,9 @@ public class PlayerActions : MonoBehaviour
     public LabelManager lm;
 
 
-    // [Header("Alert Boxes")]
-    // public static float alertDuration;
-    // public static bool isAlert;
-    // public static GameObject activeAlert;
-    // public static GameObject succCorrupt;
-    // public static GameObject fileRestored;
-    // public static GameObject failCorrupt;
-    // public static GameObject succDDOS;
-    // public static GameObject failDDOS;
-    // public static GameObject succZip;
-    // public static GameObject failZip;
-    // public static GameObject recoveryDDOS;
-    // public static GameObject ipWarning;
-    // public static GameObject ipSwitch;
-    // public static GameObject ddosAvailable;
-
-
     private bool isAtRoot = true;
     private File selectedFile;
 
-    // private void Awake() {
-    //     isAlert = false;
-    //     activeAlert = null;
-    //     succCorrupt = GameObject.Find("Text_SuccZip");
-    //     fileRestored = GameObject.Find("Text_FileRestored");
-    //     failCorrupt = GameObject.Find("Text_FailCorrupt");
-    //     succDDOS = GameObject.Find("Text_SuccDDOS");
-    //     failDDOS = GameObject.Find("Text_FailDDOS");
-    //     succZip = GameObject.Find("Text_SuccZip");
-    //     failZip = GameObject.Find("Text_FailZip");
-    //     recoveryDDOS = GameObject.Find("Text_RecoveryDDOS");
-    //     ipWarning = GameObject.Find("Text_IPWarning");
-    //     ipSwitch = GameObject.Find("Text_IPSwitch");
-    //     ddosAvailable = GameObject.Find("Text_DDOSAvailable");
-
-    // }
     void Start()
     {
         lm = FindObjectOfType<LabelManager>();
@@ -186,6 +155,11 @@ public class PlayerActions : MonoBehaviour
 
     public void Defeat()
     {
-        Debug.Log("Lose condition met for player, you lose =(");
+        loader.EndGame(false);
+    }
+
+    public void KillCoroutines()
+    {
+        StopAllCoroutines();
     }
 }

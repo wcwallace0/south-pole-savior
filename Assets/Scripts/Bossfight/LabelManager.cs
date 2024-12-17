@@ -25,7 +25,7 @@ public class LabelManager : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("X Offset: " + offset.x + "Y Offset: " + offset.y);
+       // Debug.Log("X Offset: " + offset.x + "Y Offset: " + offset.y);
 
         Buffer();
 
@@ -68,7 +68,7 @@ public class LabelManager : MonoBehaviour
         //rectTrans.anchoredPosition = targTrans.anchoredPosition + offset;
         float targX = targTrans.position.x;
         float targY = targTrans.position.y;
-        Debug.Log("Target X: " + targX + " Target Y: " + targY);
+       // Debug.Log("Target X: " + targX + " Target Y: " + targY);
         Vector2 targPos = new Vector2 (targX, targY);
         float offsX = offset.x;
         float offsY = offset.y;
@@ -98,13 +98,13 @@ public class LabelManager : MonoBehaviour
 
     public void RefreshLabels()
     {
-        Debug.Log("Length of labels: " + labels.Count);
+       // Debug.Log("Length of labels: " + labels.Count);
         List<Text> oldLabels = new List<Text>(labels);
-        Debug.Log("Length of oldLabels: " + oldLabels.Count);
+       // Debug.Log("Length of oldLabels: " + oldLabels.Count);
         labels.Clear();
-        Debug.Log("New length of oldLabels: " + oldLabels.Count);
+       // Debug.Log("New length of oldLabels: " + oldLabels.Count);
         foreach(Text lbl in oldLabels) {
-            Debug.Log("Entered for loop through oldLabels");
+            //Debug.Log("Entered for loop through oldLabels");
             lbl.GetComponent<Text>().enabled = false;
             Destroy(lbl.gameObject);
             Destroy(lbl);

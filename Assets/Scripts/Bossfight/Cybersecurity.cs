@@ -128,4 +128,8 @@ public class Cybersecurity : MonoBehaviour
         yield return new WaitForSeconds(timer);
         canDDOS = true;
     }
+    public void KillCoroutines()
+    {
+        StopAllCoroutines();
+    }
 }
