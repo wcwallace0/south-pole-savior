@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor.Search;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class LabelManager : MonoBehaviour
 {
@@ -15,24 +17,20 @@ public class LabelManager : MonoBehaviour
     private List<Folder> flds;
 
     private Text rootLbl;
-    public Vector3 offset = new Vector3(0, 1.5f, 0);
+    public Vector2 offset;
 
     public Canvas canvas;
-    public int rows = 2;
-    public int cols = 3;
-    public GameObject[,] grid;
     public float spacing;
     public float padding;
 
     void Start()
     {
-        grid = new GameObject[rows,cols];
+        Debug.Log("X Offset: " + offset.x + "Y Offset: " + offset.y);
+
         Buffer();
-        // Find all objects of type Image in the scene
+
         File[] allFiles = FindObjectsOfType<File>();
-        // Debug.Log(allFiles.Length);
         Folder[] allFlds = FindObjectsOfType<Folder>();
-        // Convert the array to a List
         fls = new List<File>(allFiles);
         flds = new List<Folder>(allFlds);
 
@@ -41,66 +39,60 @@ public class LabelManager : MonoBehaviour
             GameObject go = fl.gameObject;
             objectsToLabel.Add(go);
         }
-        // Debug.Log(objectsToLabel.Count);
+
         foreach (Folder fld in flds)
         {
             GameObject go = fld.gameObject;
             objectsToLabel.Add(go);
         }
-        //canvas.transform.localScale = new Vector3(1.4375f, 1.4375f, 1);
-        // Debug.Log(objectsToLabel.Count);
+        canvas.transform.localScale = new Vector3(1.4375f, 1.4375f, 1.4375f);
+
         RefreshLabels();
-        // Debug.Log(objectsToLabel.Count);
+
     }
 
     public void CreateLabel(GameObject target)
     {
-        // Text label;
-        // // Debug.Log("CreateLabel called");
-        // GameObject textObj = new GameObject(target.name + "_Label");
-        // // Debug.Log("textObj created. Name of obj: " + textObj.name);
-        // // Debug.Log("coords of obj: " + textObj.transform);
-        // textObj.transform.SetParent(canvas.transform, false);
-        // //textObj.transform.parent = target.transform;
-        // label = textObj.AddComponent<Text>();
-        // label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        // //label.alignment = TextAnchor.MiddleCenter;
-        // label.text = target.name;
-        // label.fontSize = 16;
-        // label.color = Color.white;
+        GameObject textObj = new GameObject(target.name + "_Label");
+        RectTransform rectTrans = textObj.AddComponent<RectTransform>();
+        RectTransform targTrans = target.GetComponent<RectTransform>();
 
-        //  textObj.transform.localPosition = target.transform.position + offset;
-        //  //textObj.transform.localScale = Vector3.one * 0.01f;
+        rectTrans.AddComponent<CanvasRenderer>();
 
-        //  labels.Add(label);
+        rectTrans.localScale = targTrans.localScale;
+        rectTrans.SetParent(canvas.transform, false);
+        rectTrans.anchorMin = targTrans.anchorMin; //new Vector2(0,1);
+        rectTrans.anchorMax = targTrans.anchorMax;
+        rectTrans.pivot = targTrans.pivot; //new Vector2(0,1);
 
+        //rectTrans.anchoredPosition = targTrans.anchoredPosition + offset;
+        float targX = targTrans.position.x;
+        float targY = targTrans.position.y;
+        Debug.Log("Target X: " + targX + " Target Y: " + targY);
+        Vector2 targPos = new Vector2 (targX, targY);
+        float offsX = offset.x;
+        float offsY = offset.y;
+
+        float tranX = targX + offsX;
+        float tranY = targY + offsY;
+        Debug.Log("Label X: " + tranX + " Label Y: " + tranY);
+
+        Vector2 pos = new Vector2(tranX, tranY);
+
+        //rectTrans.position = canvas.transform.TransformPoint(pos);
+        //rectTrans.anchoredPosition = new Vector2(tranX, tranY);
+        rectTrans.position = pos;
+        
 
         Text label;
-    // Create a new GameObject for the label
-        GameObject textObj = new GameObject(target.name + "_Label");
-
-        // Set the parent to the canvas, ensuring it's in the world space
-        textObj.transform.SetParent(canvas.transform, false);  // 'false' keeps local position
-
-        // Add the Text component and set up label
         label = textObj.AddComponent<Text>();
+
+        label.alignment = TextAnchor.UpperLeft;
         label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        //label.alignment = TextAnchor.MiddleCenter;
         label.text = target.name;
-        Transform trans = target.GetComponent<Button>().transform;
         label.fontSize = 16;
         label.color = Color.white;
 
-        // Position the label relative to the target object
-        // The target object's position is in world space, so we need to offset it
-
-        //textObj.transform.localPosition = target.transform.localPosition;
-        textObj.transform.localPosition = trans.localPosition;
-
-        // Scale the text object if necessary (optional)
-        textObj.transform.localScale = new Vector3(1.4375f, 1.4375f, 1);  // Make sure the scale is correct
-
-        // Add the label to the list
         labels.Add(label);
     }
 
@@ -132,16 +124,11 @@ public class LabelManager : MonoBehaviour
     {
         foreach (GameObject obj in objectsToLabel)
         {
-            if (obj.GetComponent<Image>().enabled){
+            if (obj.GetComponent<UnityEngine.UI.Image>().enabled){
                 CreateLabel(obj);
             }
         }
 
-    }
-
-    public void PositionLabels()
-    {
-        
     }
     IEnumerator Buffer()
     {

@@ -20,11 +20,8 @@ public class PlayerActions : MonoBehaviour
     public float ddosButtonCooldown;
     public Button ipButton;
     public float ipButtonCooldown;
-
     public LabelManager lm;
 
-    public int rows = 2;
-    public int cols = 3;
 
     // [Header("Alert Boxes")]
     // public static float alertDuration;
