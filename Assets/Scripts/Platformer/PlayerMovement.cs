@@ -28,8 +28,7 @@ public class PlayerMovement : MonoBehaviour
     public float jumpForce;
     public float dragWhenStopping;
     public float midairGravScale; // Gravity scale for jumping and falling
-    public float slopeAccel; // Gravity scale on slopes when player is sliding down
-    public float slopeAccelUp; // Gravity scale on slopes when player is moving up the slope
+    public float groundAccel; // Gravity scale on slopes when player is sliding down
     public float duckGravScale; // Gravity scale on slopes when player is holding down
 
     [Header("Other Parameters")]
@@ -139,6 +138,14 @@ public class PlayerMovement : MonoBehaviour
 
     // MOVEMENT
 
+    public void UpdateGravityScale() {
+        if(gc.isGrounded && !gc.jumped) {
+            rb.gravityScale = groundAccel;
+        } else {
+            rb.gravityScale = midairGravScale;
+        }
+    }
+
     // Called in Update()
     // Clamps magnitude of X Velocity to maxVelocity
     private void EnforceMaxVelocity() {
@@ -155,6 +162,7 @@ public class PlayerMovement : MonoBehaviour
             anim.SetTrigger("Jump");
             anim.SetBool("Falling", true);
             rb.gravityScale = midairGravScale;
+            gc.jumped = true;
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
         }
     }
@@ -193,16 +201,7 @@ public class PlayerMovement : MonoBehaviour
         } else if(wasDucking) {
             wasDucking = false;
 
-            // Set gravity scale for when not ducking
-            if(gc.isGrounded) {
-                if(rb.velocity.y > 0) {
-                    rb.gravityScale = slopeAccelUp;
-                } else {
-                    rb.gravityScale = slopeAccel;
-                }
-            } else {
-                rb.gravityScale = midairGravScale;
-            }
+            UpdateGravityScale();
 
             anim.SetBool("Ducking", false);
             anim.ResetTrigger("Boost");
@@ -323,8 +322,7 @@ public class PlayerMovement : MonoBehaviour
             isUpsideDown = !isUpsideDown;
             transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y * -1, transform.localScale.z);
             midairGravScale *= -1;
-            slopeAccel *= -1;
-            slopeAccelUp *= -1;
+            groundAccel *= -1;
             duckGravScale *= -1;
             jumpForce *= -1;
         }
@@ -332,5 +330,7 @@ public class PlayerMovement : MonoBehaviour
         // Reverse previous multiplier and apply new multiplier
         midairGravScale = (midairGravScale / gravMultiplier) * mult;
         gravMultiplier = mult;
+
+        UpdateGravityScale();
     }
 }
