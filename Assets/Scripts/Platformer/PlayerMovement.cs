@@ -47,7 +47,7 @@ public class PlayerMovement : MonoBehaviour
     private bool wasDucking = false;
     private Image boostFill;
 
-    PlayerControls controls;
+    public static PlayerControls controls;
 
     private void Awake() {
         controls = new PlayerControls();

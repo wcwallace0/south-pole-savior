@@ -80,6 +80,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Pause"",
+                    ""type"": ""Button"",
+                    ""id"": ""a5276473-864b-45e8-9ce1-e3dc4cd65a91"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -247,6 +256,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""MoveLeft"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""517f3e92-2a2c-41f9-961a-2a10f95099c4"",
+                    ""path"": ""<Keyboard>/p"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2be1ea2e-ad01-466d-b5b3-db121a9ed3b0"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -261,6 +292,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Platformer_Restart = m_Platformer.FindAction("Restart", throwIfNotFound: true);
         m_Platformer_MoveRight = m_Platformer.FindAction("MoveRight", throwIfNotFound: true);
         m_Platformer_MoveLeft = m_Platformer.FindAction("MoveLeft", throwIfNotFound: true);
+        m_Platformer_Pause = m_Platformer.FindAction("Pause", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -328,6 +360,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Platformer_Restart;
     private readonly InputAction m_Platformer_MoveRight;
     private readonly InputAction m_Platformer_MoveLeft;
+    private readonly InputAction m_Platformer_Pause;
     public struct PlatformerActions
     {
         private @PlayerControls m_Wrapper;
@@ -338,6 +371,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Restart => m_Wrapper.m_Platformer_Restart;
         public InputAction @MoveRight => m_Wrapper.m_Platformer_MoveRight;
         public InputAction @MoveLeft => m_Wrapper.m_Platformer_MoveLeft;
+        public InputAction @Pause => m_Wrapper.m_Platformer_Pause;
         public InputActionMap Get() { return m_Wrapper.m_Platformer; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -365,6 +399,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @MoveLeft.started += instance.OnMoveLeft;
             @MoveLeft.performed += instance.OnMoveLeft;
             @MoveLeft.canceled += instance.OnMoveLeft;
+            @Pause.started += instance.OnPause;
+            @Pause.performed += instance.OnPause;
+            @Pause.canceled += instance.OnPause;
         }
 
         private void UnregisterCallbacks(IPlatformerActions instance)
@@ -387,6 +424,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @MoveLeft.started -= instance.OnMoveLeft;
             @MoveLeft.performed -= instance.OnMoveLeft;
             @MoveLeft.canceled -= instance.OnMoveLeft;
+            @Pause.started -= instance.OnPause;
+            @Pause.performed -= instance.OnPause;
+            @Pause.canceled -= instance.OnPause;
         }
 
         public void RemoveCallbacks(IPlatformerActions instance)
@@ -412,5 +452,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnRestart(InputAction.CallbackContext context);
         void OnMoveRight(InputAction.CallbackContext context);
         void OnMoveLeft(InputAction.CallbackContext context);
+        void OnPause(InputAction.CallbackContext context);
     }
 }

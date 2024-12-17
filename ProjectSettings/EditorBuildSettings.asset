@@ -26,4 +26,5 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Cyberfight Victory.unity
     guid: 267f26c605d49a846a81246ad26da15d
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.input.settings: {fileID: 11400000, guid: 0a949471d33901441a0688ebab4e48df, type: 2}
