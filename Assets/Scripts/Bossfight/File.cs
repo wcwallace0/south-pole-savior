@@ -24,10 +24,11 @@ public class File : MonoBehaviour
     public LabelManager lm;
 
     void Start(){
-        lm = FindObjectOfType<LabelManager>();
-        if (gameObject.GetComponent<Image>().enabled){
-            lm.AddObject(gameObject);
-        }
+        // lm = FindObjectOfType<LabelManager>();
+        // if (gameObject.GetComponent<Image>().enabled){
+        //     lm.AddObject(gameObject);
+        // }
+        UpdateIsVulnerable();
         GetComponent<Image>().sprite = normal;
     }
 

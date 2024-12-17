@@ -56,7 +56,7 @@ public class LoadGame : MonoBehaviour
 
     public void EndGame(bool win)
     {
-        StopGame();
+        //StopGame();
         if (win){
             SceneManager.LoadScene("Cyberfight Victory");
         } else{

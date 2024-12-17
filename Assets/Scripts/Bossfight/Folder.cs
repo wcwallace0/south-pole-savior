@@ -1,13 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Emit;
+using Unity.VisualScripting;
 using UnityEditor.AssetImporters;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Folder : MonoBehaviour
 {
+    public LoadGame loader;
     public string folderName;
     public int rows = 2;
     public int cols = 3;
@@ -24,10 +27,12 @@ public class Folder : MonoBehaviour
     public bool isBombable;
     public bool isBombed;
     public GameObject[] fileDependencies;
+    public GameObject[] dependents;
     public LabelManager lm;
 
 
     private void Start() {
+        UpdateIsBombable();
         // lm = FindObjectOfType<LabelManager>();
         // if (gameObject.GetComponent<Image>().enabled){
         //     lm.AddObject(gameObject);
@@ -100,16 +105,35 @@ public class Folder : MonoBehaviour
 
     public void Corrupt() {
         if(isBombable) {
+            if (this.name == "System" || this.name == "Root") { loader.EndGame(true); }
             gameObject.GetComponent<Image>().sprite = corruptedSprite;
             gameObject.GetComponent<Button>().enabled = false;
             this.name = "CORRUPTED";
             isBombed = true;
+
+            List<GameObject> children = new List<GameObject>();
+
+            foreach(Transform child in transform)
+            {
+                File fl = child.GetComponent<File>();
+                Folder fld = child.GetComponent<Folder>();
+                if (fl != null) { fl.SetCorrupted(true); }
+                if (fld != null) { fld.Corrupt(); }
+            }
+
+            foreach(GameObject dep in dependents) {
+            File fl = dep.GetComponent<File>();
+            Folder fld = dep.GetComponent<Folder>();
+            if (fl != null) fl.UpdateIsVulnerable();
+            if (fld != null) fld.UpdateIsBombable();
+        }
         }
     }
 
     public void UpdateIsBombable() {
         Debug.Log("UpdateIsBombable called");
         bool newValue = true;
+
         foreach(GameObject file in fileDependencies) {
             File fl = file.GetComponent<File>();
             Folder fld = file.GetComponent<Folder>();

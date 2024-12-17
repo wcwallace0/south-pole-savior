@@ -92,6 +92,8 @@ public class LabelManager : MonoBehaviour
         label.text = target.name;
         label.fontSize = 16;
         label.color = Color.white;
+        textObj.AddComponent<UnityEngine.UI.Button>();
+        textObj.GetComponent<UnityEngine.UI.Button>().interactable = false;
 
         labels.Add(label);
     }
