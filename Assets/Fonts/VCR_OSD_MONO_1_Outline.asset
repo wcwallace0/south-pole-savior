@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: VCR_OSD_MONO_1_Outline
   m_EditorClassIdentifier: 
-  hashCode: -597227310
+  hashCode: -209049011
   material: {fileID: 748422192214996887}
-  materialHashCode: -1457091406
+  materialHashCode: -1104063667
   m_Version: 1.1.0
   m_SourceFontFileGUID: 54a1f8ae734b8354eb30e295de0e140e
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 54a1f8ae734b8354eb30e295de0e140e, type: 3}
