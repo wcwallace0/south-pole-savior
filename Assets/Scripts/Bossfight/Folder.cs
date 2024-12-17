@@ -33,7 +33,7 @@ public class Folder : MonoBehaviour
 
     private void Start() {
         UpdateIsBombable();
-        // lm = FindObjectOfType<LabelManager>();
+        lm = FindObjectOfType<LabelManager>();
         // if (gameObject.GetComponent<Image>().enabled){
         //     lm.AddObject(gameObject);
         // }
@@ -74,6 +74,9 @@ public class Folder : MonoBehaviour
     }
 
     private void PositionFiles() {
+        List<Text> labels = lm.labels;
+        float offX = lm.offset.x;
+        float offY = lm.offset.y;
         for(int i = 0; i<rows; i++) {
             for(int j = 0; j<cols; j++) {
                 GameObject file = grid[i,j];
@@ -81,6 +84,15 @@ public class Folder : MonoBehaviour
                     RectTransform fileRect = file.GetComponent<RectTransform>();
                     float step = spacing + fileRect.rect.width;
                     fileRect.anchoredPosition = new Vector2((j*step) + padding, (-i*step) - padding);
+                    
+                    foreach(Text lbl in labels)
+                    {
+                        if (lbl.name == file.name + "_Label"){
+                            RectTransform lblRect = lbl.GetComponent<RectTransform>();
+                            
+                            lblRect.anchoredPosition = new Vector2((j*step) + padding + offX, (-i*step) - padding + offY);
+                        }
+                    }
                 }
             }
         }

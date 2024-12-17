@@ -145,10 +145,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9627ebd236f73024c904f8a91492d96a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  loader: {fileID: 0}
   folderName: 
   rows: 2
   cols: 3
-  spacing: 50
+  spacing: 45
   padding: 20
   rectTransform: {fileID: 7552651842639160987}
   isRoot: 0
@@ -157,3 +158,5 @@ MonoBehaviour:
   isBombable: 0
   isBombed: 0
   fileDependencies: []
+  dependents: []
+  lm: {fileID: 0}

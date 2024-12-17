@@ -45,9 +45,6 @@ public class LoadGame : MonoBehaviour
 
     public void StopGame()
     {
-        player.KillCoroutines();
-        cybersec.KillCoroutines();
-        alert.KillCoroutines();
         foreach(GameObject obj in startingObs)
         {
             obj.SetActive(false);
