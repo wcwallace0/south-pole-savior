@@ -11,6 +11,7 @@ public class File : MonoBehaviour
     public string fileName;
     public bool isVulnerable = false;
     public bool isCorrupted = false;
+    public bool isInBombed = false;
 
     public Sprite normal;
     public Sprite selected;
@@ -22,9 +23,13 @@ public class File : MonoBehaviour
     public GameObject[] dependents;
 
     public LabelManager lm;
-
+    public Cybersecurity cybersec;
+    public Alert alert;
+    public PlayerActions player;
     void Start(){
         lm = FindObjectOfType<LabelManager>();
+        alert = FindObjectOfType<Alert>();
+        cybersec = FindObjectOfType<Cybersecurity>();
         // if (gameObject.GetComponent<Image>().enabled){
         //     lm.AddObject(gameObject);
         // }
@@ -35,31 +40,29 @@ public class File : MonoBehaviour
     public void SetSelected(bool isSelected) {
         // change sprite to selected
         if(!isCorrupted) {
-            GetComponent<Image>().sprite = isSelected ? selected : normal;
+            if(isSelected){
+                GetComponent<Image>().sprite = selected;
+            } else{
+                GetComponent<Image>().sprite = normal;
+            }
+            //GetComponent<Image>().sprite = isSelected ? selected : normal;
         }
     }
 
     public void SetCorrupted(bool corrupt) {
         
         GetComponent<Button>().enabled = !corrupt;
-        //Debug.Log("boolean status in SetCorrupted: " + corrupt);
         isCorrupted = corrupt;
-        //Debug.Log("boolean status in SetCorrupted: " + corrupt);
-
-
-        //TODO: This line (line 45) is not working and I (Colin) haven't been able to figure out why (hence the debug logs and test string).
-        //I've tried a few different things but there may be something obvious I'm just not seeing,
-        //I'm going to sleep on it and see if I can figure it out later, but if anyone else sees this
-        //feel free to give it a show.
+        
         GetComponent<Image>().sprite = corrupt ? corrupted : normal;
-
-
-
-        String test = corrupt ? "corrupted" : "normal";
-        //Debug.Log("File sprite: " + test);
 
         if(corrupt) {
             Cybersecurity.corruptedFiles.Add(this);
+            if(this.name == "Tracker")
+            {
+                cybersec.ipTimer += 2f;
+                alert.DisplayAlert(alert.ipNerf);
+            }
         } else {
             Cybersecurity.corruptedFiles.Remove(this);
         }
@@ -75,7 +78,7 @@ public class File : MonoBehaviour
 
 
     public void UpdateIsVulnerable() {
-        //Debug.Log("UpdateIsVulnerable called");
+        //Debug.Log("UpdateIsVulnerable c`led");
         bool newValue = true;
         foreach(GameObject file in fileDependencies) {
             File fl = file.GetComponent<File>();

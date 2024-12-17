@@ -29,11 +29,14 @@ public class Folder : MonoBehaviour
     public GameObject[] fileDependencies;
     public GameObject[] dependents;
     public LabelManager lm;
+    public Cybersecurity cybersec;
 
 
     private void Start() {
         UpdateIsBombable();
         lm = FindObjectOfType<LabelManager>();
+        cybersec = FindObjectOfType<Cybersecurity>();
+        loader = FindObjectOfType<LoadGame>();
         // if (gameObject.GetComponent<Image>().enabled){
         //     lm.AddObject(gameObject);
         // }
@@ -118,6 +121,14 @@ public class Folder : MonoBehaviour
     public void Corrupt() {
         if(isBombable) {
             if (this.name == "System" || this.name == "Root") { loader.EndGame(true); }
+            if(this.name == "Security") { 
+                cybersec.maxPoints ++; 
+                if(!cybersec.isPwned){
+                    cybersec.actionPoints = cybersec.maxPoints;
+                }
+                cybersec.endgame = true;
+            }
+            if(this.name == "Permissions Folder"){ cybersec.endgame = true;}
             gameObject.GetComponent<Image>().sprite = corruptedSprite;
             gameObject.GetComponent<Button>().enabled = false;
             this.name = "CORRUPTED";
@@ -129,7 +140,10 @@ public class Folder : MonoBehaviour
             {
                 File fl = child.GetComponent<File>();
                 Folder fld = child.GetComponent<Folder>();
-                if (fl != null) { fl.SetCorrupted(true); }
+                if (fl != null) { 
+                    fl.SetCorrupted(true);
+                    fl.isInBombed = true;
+                }
                 if (fld != null) { fld.Corrupt(); }
             }
 
@@ -143,7 +157,6 @@ public class Folder : MonoBehaviour
     }
 
     public void UpdateIsBombable() {
-        Debug.Log("UpdateIsBombable called");
         bool newValue = true;
 
         foreach(GameObject file in fileDependencies) {

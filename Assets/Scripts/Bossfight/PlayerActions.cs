@@ -56,6 +56,7 @@ public class PlayerActions : MonoBehaviour
     }
 
     public void SelectFile(File fl) {
+        DeselectFile();
         selectedFile = fl;
         selectedFile.SetSelected(true);
         corruptButton.interactable = true;
@@ -100,36 +101,37 @@ public class PlayerActions : MonoBehaviour
 
     public void CorruptFile()
     {
+        if(selectedFile.name == "System32") { 
+            alert.DisplayAlert(alert.niceTry);
+            selectedFile.isVulnerable = false;
+        }
         if (selectedFile.isVulnerable)
         {
             selectedFile.SetCorrupted(true);
             cybersec.fixFile(selectedFile);
             if (selectedFile.parent != null) selectedFile.parent.UpdateIsBombable();
+            // if(selectedFile.name == "CLASSIFIED.exe"){
+            //     alert.DisplayAlert(alert.DDOSbuff);
+            //     ddosButtonCooldown --;
+            //     cybersec.ddosTimer -= 2;
+            // } else { 
+            alert.DisplayAlert(alert.succCorrupt); 
+            //}
             DeselectFile();
             StartCoroutine(ButtonCooldown(corruptButton, corruptButtonCooldown));
-            alert.DisplayAlert(alert.succCorrupt);
-            //Debug.Log("Corrupt file success");
-            // iterate through all folders,
-            // call folder.UpdateIsBombable()
-            // if isBombable is true after, display message
         } 
         else
         {
             alert.DisplayAlert(alert.failCorrupt);
-            //Debug.Log("Corrupt file failed; insufficient permissions");
             DeselectFile();
         }
         lm.RefreshLabels();
-        //on corrupt File button click, corrupts whatever file is selected
-        //unless player has insufficient permissions, in which case the player
-        //will lose health. This will partially preoccupy the opponent (cybersec team)
-        //as they attempt to restore the file, which will give the player more time to do other things
     }
 
     public void DDOS() {
         if (cybersec.canDDOS){
             cybersec.GetPwned();
-            StartCoroutine(ButtonCooldown(ddosButton, ddosButtonCooldown));
+            //StartCoroutine(ButtonCooldown(ddosButton, ddosButtonCooldown));
             alert.DisplayAlert(alert.succDDOS);
         } else{
             alert.DisplayAlert(alert.failDDOS);
