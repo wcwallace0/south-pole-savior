@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PauseGame : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class PauseGame : MonoBehaviour
     public void Pause()
     {
         Time.timeScale = 0f; // Freeze the game
+        PlayerMovement.controls.Platformer.Disable();
         isPaused = true;
         Debug.Log("Game Paused");
     }
@@ -32,6 +34,7 @@ public class PauseGame : MonoBehaviour
     public void ResumeGame()
     {
         Time.timeScale = 1f; // Resume the game
+        PlayerMovement.controls.Platformer.Enable();
         isPaused = false;
         Debug.Log("Game Resumed");
     }
