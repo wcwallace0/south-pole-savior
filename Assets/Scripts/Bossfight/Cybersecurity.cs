@@ -9,8 +9,9 @@ public class Cybersecurity : MonoBehaviour
     public Alert alert;
     public bool isPwned = false; //boolean indicating whether the enemy is currently DDOSed
     public int actionPoints;
-    public int maxPoints = 4;
+    public int maxPoints;
     public int ipProgress; //scale is 0-4. 0 means no progress towards finding players IP, 4 means IP has been found.
+    public int ipGoal;
     public PlayerActions player;
     public bool isFindIPActive = true;
     public float ipTimer;
@@ -33,7 +34,7 @@ public class Cybersecurity : MonoBehaviour
     }
 
     void FixedUpdate(){
-        if (ipProgress == maxPoints && !gameOver){
+        if (ipProgress == ipGoal && !gameOver){
             player.Defeat();
             gameOver = true;
 
@@ -45,7 +46,7 @@ public class Cybersecurity : MonoBehaviour
             }
         }
 
-        if (ipProgress == (maxPoints - 1)){
+        if (ipProgress == (ipGoal - 1)){
             alert.DisplayAlert(alert.ipWarning);
         }
     }
@@ -116,16 +117,20 @@ public class Cybersecurity : MonoBehaviour
 
     IEnumerator FindIP()
     {
-        Debug.Log("FindIP coroutine started");
+        //Debug.Log("FindIP coroutine started");
         isFindIPActive = true;
         yield return new WaitForSeconds(ipTimer);
         ipProgress ++;
         isFindIPActive = false;
-        Debug.Log("FindIP coroutine ended, ipProgress is " +ipProgress + " out of 4");
+        //Debug.Log("FindIP coroutine ended, ipProgress is " +ipProgress + " out of 4");
     }
 
     IEnumerator DDOSTimer(float timer){
         yield return new WaitForSeconds(timer);
         canDDOS = true;
+    }
+    public void KillCoroutines()
+    {
+        StopAllCoroutines();
     }
 }
